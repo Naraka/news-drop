@@ -1,6 +1,13 @@
 from news_drop import News
 
-test1 = News()
+test1 = News(max_drops=1)
 
-print(test1.get_drops(data="aaaaa"))
+entrie = test1.get_drops(data="nba")[0]
 
+json = {
+    "title" : entrie.title,
+    "link" : entrie.link,
+    "published" : entrie.published
+}
+
+print(json)
