@@ -26,5 +26,10 @@ class News:
     
         return box
 
-    def serialization(self):
-        pass
+    def serialization(self, entrie):
+        json = {
+            "title" : entrie.title,
+            "link" : entrie.link,
+            "published" : entrie.published
+        }
+        return json
