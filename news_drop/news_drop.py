@@ -3,33 +3,29 @@ import feedparser
 # Really Simple Syndication, Atom
 RSS_URL = "https://news.google.com/rss"
 
+
 class News:
 
     def __init__(self, max_drops=5):
         self.max_drops = max_drops
 
-
-    def get_drops(self, data:str):
+    def get_drops(self, data: str):
         url = RSS_URL + f"/search?q={data}"
-        return self.get_feeds(url)
+        return self._get_feeds(url)
 
-
-    def get_feeds(self, url:str):
+    def _get_feeds(self, url: str):
 
         feeds = feedparser.parse(url)
 
-        box = []
-        for feed in feeds.entries:
-            box.append(feed)
-            if len(box) == self.max_drops:
-                break
-    
-        return box
+        def _serialization(entrie):
+            json = {
+                "title": entrie.title,
+                "link": entrie.link,
+                "published_date": entrie.published,
+                "description": entrie.description,
+                "source": entrie.source,
+            }
+            return json
 
-    def serialization(self, entrie):
-        json = {
-            "title" : entrie.title,
-            "link" : entrie.link,
-            "published" : entrie.published
-        }
-        return json
+        serialized_feeds = list(map(_serialization, feeds.entries))
+        return serialized_feeds
