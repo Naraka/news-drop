@@ -1,5 +1,8 @@
 from news_drop import News
 
-test1 = News(max_drops=10)
-entrie = test1.get_drops(data="bancaja")[0]
-print("entrie", entrie)
+test1 = News(max_drops=10, period="1y")
+entrie = test1.get_drops(data="futbol")
+# print(entrie)
+
+print(test1._period)
+print(test1._get_self_url)

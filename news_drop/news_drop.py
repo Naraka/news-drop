@@ -6,12 +6,13 @@ RSS_URL = "https://news.google.com/rss"
 
 class News:
 
-    def __init__(self, max_drops=5):
+    def __init__(self, max_drops=5, period=None):
         self.max_drops = max_drops
+        self.period = period
 
     def get_drops(self, data: str):
-        url = RSS_URL + f"/search?q={data}"
-        return self._get_feeds(url)
+        self._url = RSS_URL + f"/search?q={data}+{self._period}"
+        return self._get_feeds(self._url)
 
     def _get_feeds(self, url: str):
 
@@ -29,3 +30,13 @@ class News:
 
         serialized_feeds = list(map(_serialization, feeds.entries))
         return serialized_feeds
+
+    @property
+    def _period(self):
+        if self.period is not None:
+            period = f'%20when%3A{self.period}'
+        return period
+
+    @property
+    def _get_self_url(self):
+        return self._url
