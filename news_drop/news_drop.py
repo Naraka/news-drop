@@ -6,12 +6,15 @@ RSS_URL = "https://news.google.com/rss"
 
 class News:
 
-    def __init__(self, max_drops=5, period=None):
+    def __init__(self, max_drops=5, period=None, language="es", country="ES"):
         self.max_drops = max_drops
         self.period = period
+        self.language = language
+        self.country = country
 
     def get_drops(self, data: str):
-        self._url = RSS_URL + f"/search?q={data}+{self._period}"
+        self._url = RSS_URL + f"/search?q={data}{self._period}&hl={self.language}&gl={self.country}&ceid={self.country}:{self.language}"
+
         return self._get_feeds(self._url)
 
     def _get_feeds(self, url: str):
