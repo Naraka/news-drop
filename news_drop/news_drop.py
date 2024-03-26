@@ -6,33 +6,54 @@ RSS_URL = "https://news.google.com/rss"
 
 class News:
 
-    def __init__(self, max_drops=5, period=None, language="es", country="ES"):
+    def __init__(self, max_drops=None, period=None,
+                 language="es", country="ES"):
         self.max_drops = max_drops
         self.period = period
         self.language = language
         self.country = country
 
     def get_drops(self, data: str):
-        self._url = RSS_URL + f"/search?q={data}{self._period}&hl={self.language}&gl={self.country}&ceid={self.country}:{self.language}"
+        self._url = "{}/search?q={}{}&hl={}&gl={}&ceid={}:{}".format(RSS_URL,
+                                                                     data,
+                                                                     self.period,
+                                                                     self.language,
+                                                                     self.country,
+                                                                     self.country,
+                                                                     self.language)
 
         return self._get_feeds(self._url)
 
     def _get_feeds(self, url: str):
-
         feeds = feedparser.parse(url)
 
-        def _serialization(entrie):
-            json = {
-                "title": entrie.title,
-                "link": entrie.link,
-                "published_date": entrie.published,
-                "description": entrie.description,
-                "source": entrie.source,
-            }
-            return json
-
-        serialized_feeds = list(map(_serialization, feeds.entries))
+        serialized_feeds = list(map(self._serialization, feeds.entries[:self.max_drops]))
         return serialized_feeds
+
+    def _serialization(self, entrie):
+        json = {
+            "title": entrie.title,
+            "link": entrie.link,
+            "published_date": entrie.published,
+            "description": self._description_clean(entrie.description),
+            "source": entrie.source.title,
+        }
+        return json
+
+    def _description_clean(self, description):
+        start = description.find('<a')
+        end = description.find('</a>')
+
+        if start != -1 and end != -1:
+            description_tags = description[start:end]
+
+            first_gt = description_tags.find('>')
+
+            if first_gt != -1:
+                clean_text = description_tags[first_gt + 1:]
+
+                return clean_text
+        return None
 
     @property
     def _period(self):
