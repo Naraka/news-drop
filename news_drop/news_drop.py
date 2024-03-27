@@ -26,13 +26,12 @@ class News:
 
     def _get_feeds(self, url: str):
         feeds = feedparser.parse(url)
-
         serialized_feeds = list(map(self._serialization, feeds.entries[:self.max_drops]))
         return serialized_feeds
 
     def _serialization(self, entrie):
         json = {
-            "title": entrie.title,
+            "title": self._title_clean(entrie.title),
             "link": entrie.link,
             "published_date": entrie.published,
             "description": self._description_clean(entrie.description),
@@ -54,6 +53,13 @@ class News:
 
                 return clean_text
         return None
+
+    def _title_clean(self, title):
+        index_hyphen = title.rfind('-')
+        if index_hyphen != -1:
+            return title[:index_hyphen].strip()
+        else:
+            return title.strip()
 
     @property
     def _period(self):
