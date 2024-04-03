@@ -8,6 +8,7 @@ class News:
 
     def __init__(self, max_drops=None, period=None,
                  language="es", country="ES"):
+
         self.max_drops = max_drops
         self.period = period
         self.language = language
@@ -16,7 +17,7 @@ class News:
     def get_drops(self, data: str):
         self._url = "{}/search?q={}{}&hl={}&gl={}&ceid={}:{}".format(RSS_URL,
                                                                      data,
-                                                                     self.period,
+                                                                     self._period,
                                                                      self.language,
                                                                      self.country,
                                                                      self.country,
