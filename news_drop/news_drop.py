@@ -14,7 +14,12 @@ class News:
         self.language = language
         self.country = country
 
+    def _space_url(self, url):
+        spaced_key = "%20".join(url.split(" "))
+        return spaced_key
+
     def get_drops(self, data: str):
+        data = self._space_url(data)
         self._url = "{}/search?q={}{}&hl={}&gl={}&ceid={}:{}".format(RSS_URL,
                                                                      data,
                                                                      self._period,
@@ -22,7 +27,6 @@ class News:
                                                                      self.country,
                                                                      self.country,
                                                                      self.language)
-
         return self._get_feeds(self._url)
 
     def _get_feeds(self, url: str):
