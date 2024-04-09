@@ -1,4 +1,5 @@
 import feedparser
+import time
 
 # Really Simple Syndication, Atom
 RSS_URL = "https://news.google.com/rss"
@@ -75,3 +76,15 @@ class News:
     @property
     def _get_self_url(self):
         return self._url
+
+    def listening_drops(self, data_set:list, data):
+        while True:
+            batch = self.get_drops(data=data)
+
+            for entrie in batch:
+
+                if entrie not in data_set:
+                    data_set.append(entrie)
+                else: pass
+            print(data_set)
+            time.sleep(60)
