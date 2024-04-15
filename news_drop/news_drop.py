@@ -148,7 +148,7 @@ class News:
                 cursor.close()
                 conn.close()
 
-            time.sleep(60)
+            time.sleep(200)
 
 
     def store_in_db(self,datos):
