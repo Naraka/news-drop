@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 import feedparser
 import time
 import os
@@ -95,18 +94,21 @@ class News:
             batch = self.get_drops(data=data)
 
             for entrie in batch:
-                load_dotenv()
-                DB_USER = os.getenv('DB_USER')
-                DB_PASSWORD = os.getenv('DB_PASSWORD')
-                DB_HOST = os.getenv('DB_HOST')
-                DB_NAME = os.getenv('DB_NAME')
-
-                conn = mysql.connector.connect(
-                    user=DB_USER,
-                    password=DB_PASSWORD,
-                    host=DB_HOST,
-                    database=DB_NAME
-                )
+                DB_USER = os.environ.get('DB_USER')
+                DB_PASSWORD = os.environ.get('DB_PASSWORD')
+                DB_HOST = os.environ.get('DB_HOST')
+                DB_NAME = os.environ.get('DB_NAME')
+                try:
+                    conn = mysql.connector.connect(
+                        user=DB_USER,
+                        password=DB_PASSWORD,
+                        host=DB_HOST,
+                        database=DB_NAME
+                    )
+                    print("Conexión exitosa a la base de datos")
+                except mysql.connector.Error as err:
+                    print(f"Error al conectar a la base de datos: {err}")
+                    
                 cursor = conn.cursor()
 
                 cursor.execute("""
@@ -152,12 +154,11 @@ class News:
 
 
     def store_in_db(self,datos):
-        load_dotenv()
 
-        DB_USER = os.getenv('DB_USER')
-        DB_PASSWORD = os.getenv('DB_PASSWORD')
-        DB_HOST = os.getenv('DB_HOST')
-        DB_NAME = os.getenv('DB_NAME')
+        DB_USER = os.environ.get('DB_USER')
+        DB_PASSWORD = os.environ.get('DB_PASSWORD')
+        DB_HOST = os.environ.get('DB_HOST')
+        DB_NAME = os.environ.get('DB_NAME')
 
         conn = mysql.connector.connect(
             user=DB_USER,
