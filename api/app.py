@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import docker
 
 client = docker.from_env()
-docker_image = "gcr.io/news-drop/news-drop-container:0.1.8"
+docker_image = "gcr.io/news-drop/news-drop-container:0.1.9"
 
 class Bot(BaseModel):
     instance_key: str

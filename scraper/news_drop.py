@@ -90,26 +90,30 @@ class News:
         return self._url
 
     def listening_drops(self, data):
+        try:
+            DB_USER = os.environ.get('DB_USER')
+            DB_PASSWORD = os.environ.get('DB_PASSWORD')
+            DB_HOST = os.environ.get('DB_HOST')
+            DB_NAME = os.environ.get('DB_NAME')
+            print("las credenciales de db se han asignado correctamente")
+            print(DB_HOST, DB_NAME, DB_PASSWORD, DB_USER)
+        except: print("las credenciales de db no se han asignado correctamente")
+        try:
+            conn = mysql.connector.connect(
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            database=DB_NAME
+        )
+            print("Conexión exitosa a la base de datos")
+        except mysql.connector.Error as err:
+            print(f"Error al conectar a la base de datos: {err}")
+        cursor = conn.cursor()
         while True:
+            
             batch = self.get_drops(data=data)
-
             for entrie in batch:
-                DB_USER = os.environ.get('DB_USER')
-                DB_PASSWORD = os.environ.get('DB_PASSWORD')
-                DB_HOST = os.environ.get('DB_HOST')
-                DB_NAME = os.environ.get('DB_NAME')
-                try:
-                    conn = mysql.connector.connect(
-                        user=DB_USER,
-                        password=DB_PASSWORD,
-                        host=DB_HOST,
-                        database=DB_NAME
-                    )
-                    print("Conexión exitosa a la base de datos")
-                except mysql.connector.Error as err:
-                    print(f"Error al conectar a la base de datos: {err}")
                     
-                cursor = conn.cursor()
 
                 cursor.execute("""
                     SELECT * FROM news 
@@ -132,7 +136,6 @@ class News:
                 if existing_row:
                     print("La fila completa ya existe en la base de datos. No se insertará nada.")
                 else:
-                    # Si la fila no existe en la base de datos, se agrega a la base de datos y a data_set
                     cursor.execute("""
                         INSERT INTO news (title, link, published_date, description, source, key_str)
                         VALUES (%s, %s, %s, %s, %s, %s)
@@ -147,8 +150,7 @@ class News:
                     conn.commit()
 
 
-                cursor.close()
-                conn.close()
+
 
             time.sleep(200)
 
