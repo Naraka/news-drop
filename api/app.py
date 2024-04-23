@@ -1,12 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import docker
-
-client = docker.from_env()
-docker_image = "gcr.io/news-drop/news-drop-container:0.1.9"
+import call_pods
 
 class Bot(BaseModel):
-    instance_key: str
+    key_instance: str
 
 app = FastAPI()
 
@@ -17,31 +14,32 @@ async def root():
     return "Welcome to news-drop api"
 
 @app.post("/post_bot/")
-async def post_bot(instance_key:Bot):
-    container = client.containers.run(
-        docker_image,
-        detach=True,
-        environment={"key_instance":instance_key.instance_key},
-    )
+async def post_bot(key_instance:Bot):
+    pod_id = call_pods.crear_pod(key_instance.key_instance)
     bots.append({
-        "instance_key":instance_key.instance_key,
-        "docker_image":docker_image,
-        "container_id":container.id,
-        "container_name":container.name,
+        "key_instance":key_instance.key_instance,
+        "pod_id":pod_id,
     })
-    return instance_key.instance_key
+    return key_instance.key_instance
 
 @app.get("/get_bots/")
 async def get_bots():
     return bots
 
-@app.delete("/delete_bots/{container_id}")
-async def delete_bots(container_id:str):
-    client.containers.get(container_id).stop()
+@app.delete("/delete_bots/{pod_id}")
+async def delete_bots(pod_id:str):
+    call_pods.api_instance.delete_namespaced_pod(name=pod_id,namespace="default")
     for index, bot in enumerate(bots):
-        if bot["container_id"] == container_id:
+        if bot["pod_id"] == pod_id:
             del bots[index]
-            return  f"bot {container_id} eliminado exitosamente"
+            return  f"bot {pod_id} eliminado exitosamente"
 
+@app.delete("/delete_all_bots/")
+async def delete_bots():
+    pods = call_pods.api_instance.list_namespaced_pod(namespace="default")
+    for pod in pods.items:
+        call_pods.api_instance.delete_namespaced_pod(name=pod.metadata.name, namespace="default")
+    bots.clear()
+    return "deleted pods"
 async def update_bots():
     pass

@@ -9,3 +9,6 @@ __pycache__/
 front.py
 /front
 scraper/bot.yaml
+api/call_pods.py
+api/google-cloud-cli-472.0.0-linux-x86_64.tar.gz
+api/kubeconfig
