@@ -19,7 +19,7 @@ spec:
   serviceAccountName: api-serviceaccount-kubernetes
   containers:
   - name: api-container-news-drop
-    image: gcr.io/news-drop/news-drop-api:0.2.1
+    image: gcr.io/news-drop/news-drop-api:0.2.2
     ports:
       - containerPort: 8000
 ---
