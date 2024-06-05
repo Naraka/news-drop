@@ -1,11 +1,56 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import call_pods
+import os
+import mysql.connector
+from mysql.connector import Error
+
+app = FastAPI()
+
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_HOST = os.environ.get('DB_HOST')
+DB_NAME = os.environ.get('DB_NAME')
+
+def create_connection():
+    try:
+        connection = mysql.connector.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
+        )
+        if connection.is_connected():
+            return connection
+    except Error as e:
+        print(f"Error: '{e}'")
+        return None
+
+
+@app.get("/news")
+async def get_news():
+    connection = create_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+    
+    cursor = connection.cursor(dictionary=True)
+    query = "SELECT * FROM news"
+    
+    try:
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+
 
 class Bot(BaseModel):
     key_instance: str
 
-app = FastAPI()
 
 bots = []
 
