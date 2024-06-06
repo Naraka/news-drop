@@ -48,6 +48,27 @@ async def get_news():
 
 
 
+@app.get("/news/{key}")
+async def get_news_by_key(key: str):
+    connection = create_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+    
+    cursor = connection.cursor(dictionary=True)
+    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s"
+    
+    try:
+        cursor.execute(query, (key,))
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
 class Bot(BaseModel):
     key_instance: str
 
