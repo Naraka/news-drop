@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: front-entity
+spec:
+  containers:
+  - name: front-container
+    image: gcr.io/news-drop/front:0.1.1
+    command: ["sleep","infinity"]

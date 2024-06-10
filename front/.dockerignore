@@ -1,5 +1,6 @@
-/research
-/__pycache__
 /venv
-/podfront.yaml
-/.gitignore
+.env
+/__pycache__
+front.yaml
+role.yaml
+rolebinding.yaml
