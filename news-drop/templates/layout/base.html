@@ -140,7 +140,7 @@
 
 {% comment %} navbar {% endcomment %}
 <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">News Drop</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="{% url 'index' %}">News Drop</a>
 
   <ul class="navbar-nav flex-row d-md-none">
     <li class="nav-item text-nowrap">
@@ -163,13 +163,13 @@
         <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="#">
+              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="{% url 'index' %}">
                 <svg class="bi"><use xlink:href="#house-fill"/></svg>
                 Dashboard
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="#">
+              <a class="nav-link d-flex align-items-center gap-2" href="{% url 'drops' %}">
                 <svg class="bi"><use xlink:href="#file-earmark"/></svg>
                 Drops
               </a>
@@ -214,6 +214,12 @@
 {% comment %} navbar {% endcomment %}
 
 
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        {% block "content" %}
+        {% endblock "content"  %}
+      </main>
+  </div>
+</div>
 
 
 {% comment %} js scripts {% endcomment %}

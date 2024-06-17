@@ -4,10 +4,16 @@ import uuid
 
 try:
     config.load_incluster_config()
-    print("incluster config.")
-except ConfigException:
-    config.load_kube_config()
-    print("local config.")
+    print("In-cluster config loaded.")
+except ConfigException as e:
+    print(f"Failed to load in-cluster config: {e}")
+    try:
+        config.load_kube_config()
+        print("Local config loaded.")
+    except ConfigException as e:
+        print(f"Failed to load local config: {e}")
+        raise RuntimeError("Failed to load any Kubernetes config")
+
 
 api_instance = client.CoreV1Api()
 
