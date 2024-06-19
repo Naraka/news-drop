@@ -1,0 +1,10 @@
+<h1> aqui va el form para instanciar pods </h1>
+
+<form action="{% url 'drops' %}" method="POST">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="key_instance" name="key_instance">
+      </div>
+    </div>
+  </form>

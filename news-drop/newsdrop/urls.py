@@ -6,4 +6,5 @@ urlpatterns = [
     path('', views.index , name="index"),
     path('admin/', admin.site.urls),
     path('drops/', include("drops.urls")),
+    path('', include("users.urls")),
 ]

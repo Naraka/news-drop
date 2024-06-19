@@ -1,0 +1,34 @@
+{% extends "users/base.html" %}
+
+{% block "content" %}
+
+<h1> SIGN UP </h1>
+
+{% if error is not None %}
+<div class="alert alert-warning" role="alert">
+    {{error}}
+  </div>
+{% endif %}
+
+<form action="{% url 'signup' %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_username">Username</label>
+        <input type="text" class="form-control" id="id_username" name="username">
+    </div>
+    <div class="form-group">
+        <label for="id_password1">Password</label>
+        <input type="password" class="form-control" id="id_password1" name="password1">
+    </div>
+    <div class="form-group">
+        <label for="id_password2">Confirm Password</label>
+        <input type="password" class="form-control" id="id_password2" name="password2">
+    </div>
+    <button type="submit" class="btn btn-primary">Sign Up</button>
+</form>
+
+
+
+
+
+{% endblock "content" %}
