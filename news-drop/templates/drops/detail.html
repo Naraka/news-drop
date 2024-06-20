@@ -1,0 +1,17 @@
+{% extends "layout/base.html" %}
+
+{% block "content" %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{drop.key_instance}}</h1>
+  </div>
+
+
+<div class="list-group">
+    {% for new in news  %}
+    <a href={{new.link}} class="list-group-item list-group-item-action" target="_blank">{{new.title}}</a>
+    {% endfor %}
+  </div>
+
+
+{% endblock %}

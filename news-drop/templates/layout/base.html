@@ -178,19 +178,34 @@
 
           <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
             <span>Drops</span>
-            <a id="addDropButton" class="link-secondary" href="#" aria-label="Add a new drop">
-              <svg class="bi"><use xlink:href="#plus-circle"/></svg>
+            <a id="addDropButton" class="link-secondary" href="#" data-toggle="collapse" data-target="#dropForm" aria-expanded="false" aria-controls="dropForm" aria-label="Add a new drop">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#plus-circle"/>
+              </svg>
             </a>
           </h6>
+
+          <div class="collapse" id="dropForm">
+            <form action="{% url 'drops' %}" method="POST">
+              {% csrf_token %}
+              <div class="row">
+                <div>
+                  <input type="text" class="form-control" placeholder="key_instance" name="key_instance">
+                </div>
+              </div>
+            </form>
+          </div>
           
+          {% for dat in data %}
           <ul class="nav flex-column mb-auto">
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="#">
+              <a class="nav-link d-flex align-items-center gap-2" href={% url "detail" dat.id %}>
                 <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
-                Madrid
+                {{ dat.key_instance }}
               </a>
             </li>
           </ul>
+          {% endfor %}
 
           <hr class="my-3">
 
@@ -227,6 +242,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.js" integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp" crossorigin="anonymous"></script>
 <script src="{% static 'js/main.js' %}"></script>
 <script src="{% static 'js/color-modes.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 {% comment %} js scripts {% endcomment %}
 
 </body>

@@ -3,7 +3,6 @@
       <thead>
         <tr>
           <th scope="col">Key Instance</th>
-          <th scope="col">Pod ID</th>
           <th scope="col">Actions</th>
         </tr>
       </thead>
@@ -11,14 +10,9 @@
         {% for dat in data %}
           <tr>
             <td>{{ dat.key_instance }}</td>
-            <td>{{ dat.pod_id }}</td>
             <td>
-              <div class="btn-group" role="group" aria-label="Basic example">
-                <button class="btn btn-primary btn-sm">Ver</button>
-                <button class="btn btn-secondary btn-sm">Editar</button>
-                <button class="btn btn-danger btn-sm">Borrar</button>
-
-              </div>
+                <a href="{% url 'detail' dat.id %}" class="btn btn-primary btn-sm">Ver</a>
+                <a href="{% url 'delete_drop' dat.id %}" class="btn btn-danger btn-sm">Borrar</a>
             </td>
           </tr>
         {% endfor %}

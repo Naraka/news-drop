@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 import requests
 from .forms import DropForm
 from django.contrib.auth.decorators import login_required
+from .models import Drops
+from django.contrib import messages
+
 
 def post_bot(key_instance):
     url = 'http://127.0.0.1:80/post_bot/'
@@ -16,29 +19,81 @@ def post_bot(key_instance):
 
 def index(request):
     if request.method == "GET":
-        url = "http://127.0.0.1:80/get_bots/"
-        response = requests.get(url=url)
-
-        if response.status_code == 200:
-            data = response.json()
-        else:
-            data = {"error":response.status_code}
-
-        return render(request,"drops/index.html",{
-            "data":data,
-            "form":DropForm
+        drops = Drops.objects.filter(user=request.user)
+        return render(request, "drops/index.html", {
+            "data": drops,
+            "form": DropForm()
         })
     else:
-        try:
-            try:
-                post_bot(request.POST["key_instance"])
-            except:
-                pass
-            bot = DropForm(request.POST)
-            newbot = bot.save(commit=False)
-            newbot.user = request.user
-            newbot.save()
+        bot_form = DropForm(request.POST)
+        if bot_form.is_valid():
+            key_instance = bot_form.cleaned_data['key_instance']
+            if Drops.objects.filter(key_instance=key_instance, user=request.user).exists():
+                messages.error(request, 'Bot with this key instance already exists.')
+                return redirect("drops")
+            else:
+                newbot = bot_form.save(commit=False)
+                newbot.user = request.user
+                newbot.save()
+                messages.success(request, 'Bot created successfully.')
+                try:
+                    post_bot(key_instance)
+                except Exception as e:
+                    messages.error(request, f'Error posting bot: {str(e)}')
+                    return redirect("drops")
+                
+                return redirect("drops")
+        else:
+            messages.error(request, 'Invalid form submission.')
             return redirect("drops")
-        except:
-            pass
 
+
+def delete_bot(key_instance):
+    url = f'http://127.0.0.1:80/delete_bots/{key_instance}'
+    response = requests.delete(url)
+
+    if response.status_code == 200:
+        print(response.text)
+    else:
+        print('ERROR', response.status_code)
+
+
+def delete_drop(request, drop_id):
+    drop = Drops.objects.get(id=drop_id, user=request.user)
+    drop.delete()
+
+    if Drops.objects.filter(key_instance=drop.key_instance).exists():
+        return redirect("drops")    
+    else:
+        print(drop.key_instance)
+        delete_bot(drop.key_instance)
+        return redirect("drops")
+
+
+
+
+
+
+def news_by_key(key_instance):
+    url = f'http://127.0.0.1:80/news/{key_instance}'
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return 'ERROR', response.status_code
+
+
+def detail(request, drop_id):
+    drop = Drops.objects.get(id=drop_id)
+    data = Drops.objects.filter(user=request.user)
+
+    news = news_by_key(drop.key_instance)
+
+    context={
+        "news":news,
+        "data":data,
+        "drop":drop
+    }
+
+    return render(request,"drops/detail.html",context)
