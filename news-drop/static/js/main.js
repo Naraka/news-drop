@@ -10,7 +10,7 @@
       type: 'line',
       data: {
         labels: [
-          'Sunday',
+          '{{drop.key_instance}}',
           'Monday',
           'Tuesday',
           'Wednesday',

@@ -7,11 +7,19 @@
   </div>
 
 
-<div class="list-group">
+  <div style="display: flex; justify-content: space-around;">
+    <div style="width: 45%;">
+        {% include "drops/partials/barchar.html" %}
+    </div>
+    <div style="width: 45%;">
+        {% include "drops/partials/doughnut.html" %}
+    </div>
+</div>
+
+  
+  <div class="list-group">
     {% for new in news  %}
     <a href={{new.link}} class="list-group-item list-group-item-action" target="_blank">{{new.title}}</a>
     {% endfor %}
   </div>
-
-
 {% endblock %}

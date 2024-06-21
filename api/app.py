@@ -121,3 +121,43 @@ async def delete_bots():
     return "deleted pods"
 async def update_bots():
     pass
+
+
+
+
+
+@app.get("/get_more_frequent_word/{key}")
+async def get_more_frequent_word(key: str):
+    connection = create_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+    
+    cursor = connection.cursor(dictionary=True)
+    query = """
+                SELECT word, COUNT(*) AS frequency
+                FROM (
+                    SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(title, ' ', n.digit+1), ' ', -1) AS word
+                    FROM newsdropbd.news
+                    JOIN (
+                        SELECT 0 AS digit UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
+                        UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7
+                        UNION ALL SELECT 8 UNION ALL SELECT 9
+                    ) n
+                    ON LENGTH(REPLACE(title, ' ', '')) <= LENGTH(title)-n.digit
+                    WHERE key_str = %s
+                ) words
+                GROUP BY word
+                ORDER BY frequency DESC
+                LIMIT 20;
+
+            """
+    
+    try:
+        cursor.execute(query, (key,))
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
