@@ -16,7 +16,7 @@ def post_bot(key_instance):
     else:
         return response.status_code
 
-
+@login_required
 def index(request):
     if request.method == "GET":
         drops = Drops.objects.filter(user=request.user)
@@ -57,7 +57,7 @@ def delete_bot(key_instance):
     else:
         print('ERROR', response.status_code)
 
-
+@login_required
 def delete_drop(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     drop.delete()
@@ -92,8 +92,9 @@ def more_frequent_word(key_instance):
     else:
         return 'ERROR', response.status_code
 
+@login_required
 def detail(request, drop_id):
-    drop = Drops.objects.get(id=drop_id)
+    drop = Drops.objects.get(id=drop_id, user=request.user)
     data = Drops.objects.filter(user=request.user)
 
     news = news_by_key(drop.key_instance)
