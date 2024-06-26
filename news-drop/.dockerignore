@@ -1,0 +1,4 @@
+/venv
+django_front.yaml
+/__pycache__
+.env

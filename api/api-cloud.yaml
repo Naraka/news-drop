@@ -19,7 +19,7 @@ spec:
   serviceAccountName: api-serviceaccount-kubernetes
   containers:
   - name: api-container-news-drop
-    image: gcr.io/news-drop/news-drop-api:0.2.8
+    image: gcr.io/news-drop/news-drop-api:0.3.0
     env:
     - name: DB_USER
       valueFrom:
@@ -42,7 +42,7 @@ spec:
           name: db-credentials
           key: DB_PASSWORD
     ports:
-      - containerPort: 8000
+      - containerPort: 80
     resources:
       limits:
         cpu: "100m"
@@ -61,5 +61,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 80
   type: ClusterIP

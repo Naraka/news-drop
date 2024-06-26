@@ -7,7 +7,7 @@ from django.contrib import messages
 
 
 def post_bot(key_instance):
-    url = 'http://127.0.0.1:80/post_bot/'
+    url = 'http://34.118.233.244:80/post_bot/'
     data = {"key_instance": key_instance}
     response = requests.post(url, json=data)
 
@@ -49,7 +49,7 @@ def index(request):
 
 
 def delete_bot(key_instance):
-    url = f'http://127.0.0.1:80/delete_bots/{key_instance}'
+    url = f'http://34.118.233.244:80/delete_bots/{key_instance}'
     response = requests.delete(url)
 
     if response.status_code == 200:
@@ -75,7 +75,7 @@ def delete_drop(request, drop_id):
 
 
 def news_by_key(key_instance):
-    url = f'http://127.0.0.1:80/news/{key_instance}'
+    url = f'http://34.118.233.244:80/news/{key_instance}'
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -84,7 +84,7 @@ def news_by_key(key_instance):
         return 'ERROR', response.status_code
 
 def more_frequent_word(key_instance):
-    url = f'http://127.0.0.1:80/get_more_frequent_word/{key_instance}'
+    url = f'http://34.118.233.244:80/get_more_frequent_word/{key_instance}'
     response = requests.get(url)
 
     if response.status_code == 200:

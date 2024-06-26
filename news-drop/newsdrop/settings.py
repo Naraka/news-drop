@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-i49x$*x7ox5j@sa2zux&7lysqzt_((*wzoyzod1bm^1(zk#4y!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -78,7 +78,9 @@ WSGI_APPLICATION = 'newsdrop.wsgi.application'
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+try:
+    load_dotenv()
+except: pass
 
 DATABASES = {
     'default': {
@@ -127,10 +129,16 @@ USE_TZ = True
 
 import os
 
-STATIC_URL = '/static/'
+#nombre de la carpeta en la que estan los estaticos cuando los carga la web
+STATIC_URL = "https://storage.googleapis.com/newsdropstatic/staticfiles/"
+
+#path donde esta referenciada los staticos en local
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+#donde deberia star el buket
+#cuando collecstatic path y nombre de la carpeta donde se van
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 

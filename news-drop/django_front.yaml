@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: django-news-drop
+  labels:
+    app: django-news-drop
+spec:
+  containers:
+  - name: django-container-news-drop
+    image: gcr.io/news-drop/django-container-news-drop:0.0.1
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials
+          key: DB_USER
+    - name: DB_HOST
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials
+          key: DB_HOST
+    - name: DB_NAME
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials
+          key: DB_NAME
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: db-credentials
+          key: DB_PASSWORD
+    ports:
+      - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-news-drop-service
+spec:
+  selector:
+    app: django-news-drop
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
