@@ -4,7 +4,15 @@ from .forms import DropForm
 from django.contrib.auth.decorators import login_required
 from .models import Drops
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 
+
+def superuser_required(function):
+    def wrap(request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_superuser:
+            raise PermissionDenied
+        return function(request, *args, **kwargs)
+    return wrap
 
 def post_bot(key_instance):
     url = 'http://34.118.233.244:80/post_bot/'
@@ -17,6 +25,7 @@ def post_bot(key_instance):
         return response.status_code
 
 @login_required
+@superuser_required
 def index(request):
     if request.method == "GET":
         drops = Drops.objects.filter(user=request.user)
@@ -58,6 +67,7 @@ def delete_bot(key_instance):
         print('ERROR', response.status_code)
 
 @login_required
+@superuser_required
 def delete_drop(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     drop.delete()
@@ -93,6 +103,7 @@ def more_frequent_word(key_instance):
         return 'ERROR', response.status_code
 
 @login_required
+@superuser_required
 def detail(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     data = Drops.objects.filter(user=request.user)
