@@ -60,7 +60,7 @@ async def get_news_by_key(key: str):
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 100"
+    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 10"
     
     try:
         cursor.execute(query, (key,))
@@ -150,8 +150,75 @@ async def get_more_frequent_word(key: str):
                 ) words
                 GROUP BY word
                 ORDER BY frequency DESC
-                LIMIT 20;
+                LIMIT 40;
 
+            """
+    
+    try:
+        cursor.execute(query, (key,))
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+
+@app.get("/get_news_frequency/{key}")
+async def get_news_frequency(key: str):
+    connection = create_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+    
+    cursor = connection.cursor(dictionary=True)
+    query = """
+                SELECT
+                    DATE_FORMAT(published_date, '%Y-%m-%d %H:00:00') AS interval_published,
+                    COUNT(*) AS count_per_interval
+                FROM
+                    newsdropbd.news
+                WHERE
+                    key_str = %s
+                GROUP BY
+                    interval_published
+                ORDER BY
+                    interval_published;
+            """
+    
+    try:
+        cursor.execute(query, (key,))
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.get("/most_frequent_time/{key}")
+async def most_frequent_time(key: str):
+    connection = create_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+    
+    cursor = connection.cursor(dictionary=True)
+    query = """
+                    SELECT 
+                        DATE_FORMAT(published_date, '%H:00:00') AS hour
+                    FROM 
+                        newsdropbd.news
+                    WHERE 
+                        key_str = %s
+                    GROUP BY 
+                        hour
+                    ORDER BY 
+                        COUNT(*) DESC
+                    LIMIT 3;
             """
     
     try:

@@ -102,20 +102,42 @@ def more_frequent_word(key_instance):
     else:
         return 'ERROR', response.status_code
 
+def get_news_frequency(key_instance):
+    url = f'http://34.118.233.244:80/get_news_frequency/{key_instance}'
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return 'ERROR', response.status_code
+
+def most_frequenttime(key_instance):
+    url = f'http://34.118.233.244:80/most_frequent_time/{key_instance}'
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return 'ERROR', response.status_code
+
 @login_required
 @superuser_required
 def detail(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     data = Drops.objects.filter(user=request.user)
 
+    most_frequent_time = most_frequenttime(drop.key_instance)
     news = news_by_key(drop.key_instance)
     bar_data = more_frequent_word(drop.key_instance)
+    news_frequency = get_news_frequency(drop.key_instance)
 
     context={
         "news":news,
         "data":data,
         "drop":drop,
         "bar_data":bar_data,
+        "news_frequency":news_frequency,
+        "most_frequent_time":most_frequent_time,
     }
 
     return render(request,"drops/detail.html",context)

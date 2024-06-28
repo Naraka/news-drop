@@ -1,5 +1,4 @@
-<canvas id="barChart" width="400" height="200"></canvas>
-
+<canvas id="barChart" width="300" height="225"></canvas>
 <script>
     const dataFromDjangoBar = {{ bar_data|safe }};
 
@@ -9,7 +8,7 @@
     const dataBar = {
         labels: labelsBar,
         datasets: [{
-            label: "Frecuencia de Palabras (Bar)",
+            label: "Frequency",
             data: frequenciesBar,
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
             borderColor: 'rgb(54, 162, 235)',

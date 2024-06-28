@@ -1,0 +1,54 @@
+<canvas id="lineChart"></canvas>
+<script>
+    // Datos obtenidos de Django (ya formateados correctamente)
+    const dataFromDjangonews_frequency = {{ news_frequency|safe }};
+
+    // Extraer etiquetas y frecuencias para el gráfico
+    const labelsLine = dataFromDjangonews_frequency.map(item => item.interval_published);
+    const frequenciesLine = dataFromDjangonews_frequency.map(item => item.count_per_interval);
+
+    // Configurar datos y opciones para el gráfico de líneas
+    const dataLine = {
+        labels: labelsLine,
+        datasets: [{
+            label: 'Frequency',
+            data: frequenciesLine,
+            fill: false,  // No rellenar debajo de la línea
+            borderColor: 'rgb(54, 162, 235)',
+            tension: 0.4
+        }]
+    };
+
+    const configLine = {
+        type: 'line',
+        data: dataLine,
+        options: {
+            scales: {
+                x: {
+                    display: false,  // Ocultar el eje x
+                    grid: {
+                        display: false  // Ocultar la cuadrícula del eje x
+                    }
+                },
+                y: {
+                    display: false,  // Ocultar el eje y
+                    beginAtZero: true,
+                    grid: {
+                        display: false  // Ocultar la cuadrícula del eje y
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false  // Ocultar la leyenda
+                }
+            },
+        }
+    };
+
+    // Crear el gráfico de líneas cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('lineChart').getContext('2d');
+        var myChart = new Chart(ctx, configLine);
+    });
+</script>

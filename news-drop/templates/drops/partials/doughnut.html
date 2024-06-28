@@ -1,5 +1,4 @@
-<canvas id="myChart2" width="400" height="200"></canvas>
-
+<canvas id="myChart2" width="300" height="225"></canvas>
 <script>
     // Datos recibidos desde Django
     const dataFromDjango = {{ bar_data|safe }};
@@ -41,7 +40,7 @@
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    position: 'right',
                 },
                 tooltip: {
                     callbacks: {

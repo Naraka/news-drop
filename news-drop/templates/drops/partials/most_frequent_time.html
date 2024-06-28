@@ -1,0 +1,7 @@
+<div class="d-flex justify-content-center align-items-center">
+    <div class="list-group text-center">
+        {% for mosthour in most_frequent_time %}
+        <a class="list-group-item list-group-item-action display-4">{{ mosthour.hour }}</a>
+        {% endfor %}
+    </div>
+</div>

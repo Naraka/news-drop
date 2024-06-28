@@ -1,57 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Word Graph</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
-    <style>
-        #network {
-            width: 100%;
-            height: 600px;
-            border: 1px solid lightgray;
-        }
-    </style>
-</head>
-<body>
-    <div id="network"></div>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
 
-    <script>
-        const dataFromDjango = {{ bar_data|safe }};
+<div id="my_dataviz"></div>
 
-        const nodes = dataFromDjango.map((item, index) => ({
-            id: index,
-            label: item.word,
-            value: item.frequency,
-            title: `Frequency: ${item.frequency}`
-        }));
+<script>
+    // List of words (Replace this with your actual data)
+    const dataFromDjangoCloud = {{ bar_data|safe }};
 
-        const edges = []; // No edges needed for this simple graph
+    // Map the words and frequencies into an array of objects
+    const myWords = dataFromDjangoCloud.map(item => ({ text: item.word, frequency: item.frequency }));
 
-        const container = document.getElementById('network');
-        const data = {
-            nodes: new vis.DataSet(nodes),
-            edges: new vis.DataSet(edges)
-        };
-        const options = {
-            nodes: {
-                shape: 'dot',
-                scaling: {
-                    label: {
-                        enabled: true,
-                        min: 8,
-                        max: 20
-                    }
-                }
-            },
-            physics: {
-                enabled: true,
-                solver: 'barnesHut'
-            }
-        };
-        const network = new vis.Network(container, data, options);
-    </script>
-</body>
-</html>
+    // Set the dimensions and margins of the graph
+    var margin = {top: 10, right: 10, bottom: 10, left: 10},
+        width = Math.min(window.innerWidth, 800) - margin.left - margin.right,
+        height = Math.min(window.innerHeight, 600) - margin.top - margin.bottom;
 
+    // Append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz").append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .append("g")
+        .attr("transform", "translate(" + (width / 2 + margin.left) + "," + (height / 2 + margin.top) + ")");
+
+    // Define the minimum and maximum font sizes
+    const minFontSize = 20;
+    const maxFontSize = 70;
+
+    // Get the minimum and maximum frequency to scale font sizes
+    const minFreq = d3.min(myWords, d => d.frequency);
+    const maxFreq = d3.max(myWords, d => d.frequency);
+
+    // Constructs a new cloud layout instance. It runs an algorithm to find the position of words that suits your requirements
+    var layout = d3.layout.cloud()
+        .size([width, height])
+        .words(myWords)
+        .padding(5) // Adjust padding as needed
+        .rotate(function() { return 0; }) // No rotation
+        .fontSize(function(d) {
+            // Scale font size based on frequency
+            return minFontSize + (d.frequency - minFreq) / (maxFreq - minFreq) * (maxFontSize - minFontSize);
+        })
+        .on("end", draw);
+    layout.start();
+
+    // This function takes the output of 'layout' above and draws the words
+    function draw(words) {
+        svg
+            .selectAll("text")
+            .data(words)
+            .enter().append("text")
+            .style("font-size", function(d) { return d.size + "px"; }) // Use d.size instead of d.frequency
+            .style("fill", function(d, i) { return d3.schemeCategory10[i % 10]; }) // Color for each word
+            .attr("text-anchor", "middle")
+            .attr("transform", function(d) {
+                return "translate(" + [d.x, d.y] + ")";
+            })
+            .text(function(d) { return d.text; });
+    }
+</script>
 
