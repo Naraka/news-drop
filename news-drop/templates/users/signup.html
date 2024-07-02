@@ -2,33 +2,38 @@
 
 {% block "content" %}
 
-<h1> SIGN UP </h1>
-
 {% if error is not None %}
 <div class="alert alert-warning" role="alert">
     {{error}}
   </div>
 {% endif %}
 
-<form action="{% url 'signup' %}" method="POST">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="id_username">Username</label>
-        <input type="text" class="form-control" id="id_username" name="username">
-    </div>
-    <div class="form-group">
-        <label for="id_password1">Password</label>
-        <input type="password" class="form-control" id="id_password1" name="password1">
-    </div>
-    <div class="form-group">
-        <label for="id_password2">Confirm Password</label>
-        <input type="password" class="form-control" id="id_password2" name="password2">
-    </div>
-    <button type="submit" class="btn btn-primary">Sign Up</button>
-</form>
-
-
-
+<div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+        <div class="modal-header p-5 pb-4 border-bottom-0">
+            <h1 class="fw-bold mb-0 fs-2">Sign up</h1>
+           </div>
+           <div class="modal-body p-5 pt-0">
+               <form action="{% url 'signup' %}" method="POST">
+               {% csrf_token %}
+           <div class="form-floating mb-3">
+             <input type="text" class="form-control rounded-3" id="id_username" placeholder="Username" name="username">
+             <label for="floatingInput">Username</label>
+           </div>
+           <div class="form-floating mb-3">
+             <input type="password" class="form-control rounded-3" id="id_password1" name="password1" placeholder="Password">
+             <label for="floatingPassword">Password</label>
+           </div>
+           <div class="form-floating mb-3">
+             <input type="password" class="form-control rounded-3" id="id_password2" name="password2" placeholder="Password">
+             <label for="floatingPassword">Confirm Password</label>
+           </div>
+           <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Sign up</button>
+           <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
+         </form>
+       </div>
+   </div>
+</div>
 
 
 {% endblock "content" %}
