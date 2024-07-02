@@ -1,3 +1,4 @@
+import string
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import call_pods
@@ -5,6 +6,10 @@ import os
 import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from collections import Counter
 
 
 app = FastAPI()
@@ -126,6 +131,34 @@ async def update_bots():
 
 
 
+nltk.download('stopwords')
+nltk.download('punkt')
+
+def clean_text(text):
+    cleaned_text = ''.join([char.lower() for char in text if char not in string.punctuation + '\"' + '“”'])
+    cleaned_text = ' '.join(cleaned_text.split())
+    return cleaned_text
+
+def process_titles(json_list):
+    stop_words = set(stopwords.words('spanish'))
+    word_freq = Counter()
+
+    for json_obj in json_list:
+        title = json_obj.get('title', '')
+        
+        cleaned_title = clean_text(title)
+        
+        word_tokens = word_tokenize(cleaned_title, language='spanish')
+        
+        for word in word_tokens:
+            if word.lower() not in stop_words:
+                word_freq[word.lower()] += 1
+    
+    most_common_words = word_freq.most_common(40)
+    
+    result_list = [{'word': word, 'frequency': freq} for word, freq in most_common_words]
+    
+    return result_list
 
 
 @app.get("/get_more_frequent_word/{key}")
@@ -136,28 +169,19 @@ async def get_more_frequent_word(key: str):
     
     cursor = connection.cursor(dictionary=True)
     query = """
-                SELECT word, COUNT(*) AS frequency
-                FROM (
-                    SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(title, ' ', n.digit+1), ' ', -1) AS word
-                    FROM newsdropbd.news
-                    JOIN (
-                        SELECT 0 AS digit UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3
-                        UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7
-                        UNION ALL SELECT 8 UNION ALL SELECT 9
-                    ) n
-                    ON LENGTH(REPLACE(title, ' ', '')) <= LENGTH(title)-n.digit
-                    WHERE key_str = %s
-                ) words
-                GROUP BY word
-                ORDER BY frequency DESC
-                LIMIT 40;
+        SELECT title
+        FROM newsdropbd.news
+        WHERE key_str = %s
+        AND published_date >= NOW() - INTERVAL 1 DAY
+        ORDER BY published_date DESC;
+    """
 
-            """
+
     
     try:
         cursor.execute(query, (key,))
         result = cursor.fetchall()
-        return result
+        return process_titles(result)
     except Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:

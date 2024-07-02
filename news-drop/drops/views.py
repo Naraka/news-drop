@@ -6,6 +6,8 @@ from .models import Drops
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
+# BASE_URL = "http://34.118.233.244:80"
+BASE_URL = "http://127.0.0.1:80"
 
 def superuser_required(function):
     def wrap(request, *args, **kwargs):
@@ -15,7 +17,7 @@ def superuser_required(function):
     return wrap
 
 def post_bot(key_instance):
-    url = 'http://34.118.233.244:80/post_bot/'
+    url = f'{BASE_URL}/post_bot/'
     data = {"key_instance": key_instance}
     response = requests.post(url, json=data)
 
@@ -43,6 +45,7 @@ def index(request):
             else:
                 newbot = bot_form.save(commit=False)
                 newbot.user = request.user
+                newbot.key_instance = newbot.key_instance.lower()
                 newbot.save()
                 messages.success(request, 'Bot created successfully.')
                 try:
@@ -58,7 +61,7 @@ def index(request):
 
 
 def delete_bot(key_instance):
-    url = f'http://34.118.233.244:80/delete_bots/{key_instance}'
+    url = f'{BASE_URL}/delete_bots/{key_instance}'
     response = requests.delete(url)
 
     if response.status_code == 200:
@@ -85,7 +88,7 @@ def delete_drop(request, drop_id):
 
 
 def news_by_key(key_instance):
-    url = f'http://34.118.233.244:80/news/{key_instance}'
+    url = f'{BASE_URL}/news/{key_instance}'
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -94,7 +97,7 @@ def news_by_key(key_instance):
         return 'ERROR', response.status_code
 
 def more_frequent_word(key_instance):
-    url = f'http://34.118.233.244:80/get_more_frequent_word/{key_instance}'
+    url = f'{BASE_URL}/get_more_frequent_word/{key_instance}'
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -103,7 +106,7 @@ def more_frequent_word(key_instance):
         return 'ERROR', response.status_code
 
 def get_news_frequency(key_instance):
-    url = f'http://34.118.233.244:80/get_news_frequency/{key_instance}'
+    url = f'{BASE_URL}/get_news_frequency/{key_instance}'
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -112,7 +115,7 @@ def get_news_frequency(key_instance):
         return 'ERROR', response.status_code
 
 def most_frequenttime(key_instance):
-    url = f'http://34.118.233.244:80/most_frequent_time/{key_instance}'
+    url = f'{BASE_URL}/most_frequent_time/{key_instance}'
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -130,6 +133,7 @@ def detail(request, drop_id):
     news = news_by_key(drop.key_instance)
     bar_data = more_frequent_word(drop.key_instance)
     news_frequency = get_news_frequency(drop.key_instance)
+
 
     context={
         "news":news,
