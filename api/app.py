@@ -65,7 +65,7 @@ async def get_news_by_key(key: str):
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 10"
+    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 6"
     
     try:
         cursor.execute(query, (key,))
@@ -111,7 +111,7 @@ async def delete_bots(key_instance:str):
         if i["key_instance"] == key_instance:
             pod_id=i["pod_id"]
 
-    call_pods.api_instance.delete_namespaced_pod(name=pod_id,namespace="api-namescape-news-drop")
+    call_pods.api_instance.delete_namespaced_pod(name=pod_id,namespace="bots")
     for index, bot in enumerate(bots):
         if bot["pod_id"] == pod_id:
             del bots[index]
@@ -121,9 +121,9 @@ async def delete_bots(key_instance:str):
 
 @app.delete("/delete_all_bots/")
 async def delete_bots():
-    pods = call_pods.api_instance.list_namespaced_pod(namespace="api-namescape-news-drop")
+    pods = call_pods.api_instance.list_namespaced_pod(namespace="bots")
     for pod in pods.items:
-        call_pods.api_instance.delete_namespaced_pod(name=pod.metadata.name, namespace="api-namescape-news-drop")
+        call_pods.api_instance.delete_namespaced_pod(name=pod.metadata.name, namespace="bots")
     bots.clear()
     return "deleted pods"
 async def update_bots():

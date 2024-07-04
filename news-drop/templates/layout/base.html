@@ -229,7 +229,18 @@
 {% comment %} navbar {% endcomment %}
 
 
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+      {% if messages %}
+          {% for message in messages %} 
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <strong>{{ message }}</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      {% endif %}
+
+
         {% block "content" %}
         {% endblock "content"  %}
       </main>

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from drops.models import Drops
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
 
 
@@ -20,3 +21,6 @@ def index(request):
         return render(request, "index.html", {
             "data": drops,
         })
+
+def server_error_view(request):
+    return redirect('drops')

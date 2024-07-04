@@ -82,7 +82,7 @@ def crear_pod(key_instance):
         )
     )
 
-    instance = api_instance.create_namespaced_pod(namespace="api-namescape-news-drop", body=pod)
+    instance = api_instance.create_namespaced_pod(namespace="bots", body=pod)
     return pod_name
 
 

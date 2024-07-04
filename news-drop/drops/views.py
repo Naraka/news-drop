@@ -6,8 +6,8 @@ from .models import Drops
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 
-# BASE_URL = "http://34.118.233.244:80"
-BASE_URL = "http://127.0.0.1:80"
+BASE_URL = "http://34.118.238.20:80"
+# BASE_URL = "http://127.0.0.1:80"
 
 def superuser_required(function):
     def wrap(request, *args, **kwargs):
@@ -74,15 +74,11 @@ def delete_bot(key_instance):
 def delete_drop(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     drop.delete()
-
-    if Drops.objects.filter(key_instance=drop.key_instance).exists():
+    if not Drops.objects.filter(key_instance=drop.key_instance).exists():
+        delete_bot(drop.key_instance)
         return redirect("drops")    
     else:
-        print(drop.key_instance)
-        delete_bot(drop.key_instance)
         return redirect("drops")
-
-
 
 
 
@@ -126,22 +122,25 @@ def most_frequenttime(key_instance):
 @login_required
 @superuser_required
 def detail(request, drop_id):
-    drop = Drops.objects.get(id=drop_id, user=request.user)
-    data = Drops.objects.filter(user=request.user)
+    if request.method == "GET":
+        drop = Drops.objects.get(id=drop_id, user=request.user)
+        data = Drops.objects.filter(user=request.user)
 
-    most_frequent_time = most_frequenttime(drop.key_instance)
-    news = news_by_key(drop.key_instance)
-    bar_data = more_frequent_word(drop.key_instance)
-    news_frequency = get_news_frequency(drop.key_instance)
+        most_frequent_time = most_frequenttime(drop.key_instance)
+        news = news_by_key(drop.key_instance)
+        bar_data = more_frequent_word(drop.key_instance)
+        news_frequency = get_news_frequency(drop.key_instance)
 
 
-    context={
-        "news":news,
-        "data":data,
-        "drop":drop,
-        "bar_data":bar_data,
-        "news_frequency":news_frequency,
-        "most_frequent_time":most_frequent_time,
-    }
+        context={
+            "news":news,
+            "data":data,
+            "drop":drop,
+            "bar_data":bar_data,
+            "news_frequency":news_frequency,
+            "most_frequent_time":most_frequent_time,
+        }
 
-    return render(request,"drops/detail.html",context)
+        return render(request,"drops/detail.html",context)
+    else:
+        return redirect("drops")

@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: api-namescape-news-drop
+  namespace: bots
   name: api-role
 rules:
 - apiGroups: [""]
