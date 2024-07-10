@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-news-drop
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: django-news-drop
+  template:
+    metadata:
+      labels:
+        app: django-news-drop
+    spec:
+      containers:
+      - name: django-container-news-drop
+        image: gcr.io/news-drop/django-container-news-drop:0.3.4
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: django-db-credentials 
+              key: DB_USER
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: django-db-credentials 
+              key: DB_HOST
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: django-db-credentials 
+              key: DB_NAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: django-db-credentials 
+              key: DB_PASSWORD
+        ports:
+        - containerPort: 80
+---
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: managed-cert
+spec:
+  domains:
+    - app.newsdropped.com
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-clusterip-service
+spec:
+  selector:
+    app: django-news-drop
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+
+---
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: http-to-https
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: managed-cert-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: newsdropped-ip
+    networking.gke.io/managed-certificates: managed-cert
+    kubernetes.io/ingress.class: "gce"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    networking.gke.io/v1beta1.FrontendConfig: "http-to-https"
+spec:
+  defaultBackend:
+    service:
+      name: django-clusterip-service
+      port:
+        number: 80
+
+
+

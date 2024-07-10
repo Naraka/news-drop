@@ -3,6 +3,7 @@ from drops.models import Drops
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 
 
 def superuser_required(function):
@@ -24,3 +25,6 @@ def index(request):
 
 def server_error_view(request):
     return redirect('drops')
+
+def health_check(request):
+    return HttpResponse("OK", status=200)

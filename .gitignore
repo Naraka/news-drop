@@ -8,3 +8,4 @@ __pycache__/
 # Research #
 /front/Research
 scraper/bot.yaml
+news-drop/newsdrop/settings.py
