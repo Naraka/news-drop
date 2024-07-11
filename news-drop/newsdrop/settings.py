@@ -81,8 +81,6 @@ WSGI_APPLICATION = 'newsdrop.wsgi.application'
 
 
 
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
