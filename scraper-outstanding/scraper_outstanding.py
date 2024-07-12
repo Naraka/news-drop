@@ -37,7 +37,7 @@ class News:
             "published_date": self._published_date_clean(entrie.published),
             "description": self._description_clean(entrie.description),
             "source": entrie.source.title,
-            "key_str": "outstanding",
+            "key_str": f"outstanding_{self.language}_{self.country}",
         }
         return json
 
@@ -71,7 +71,7 @@ class News:
             return title.strip()
 
 
-    def listening_drops(self, data):
+    def listening_drops(self):
         try:
             DB_USER = os.environ.get('DB_USER')
             DB_PASSWORD = os.environ.get('DB_PASSWORD')
@@ -93,7 +93,7 @@ class News:
         cursor = conn.cursor()
         while True:
             
-            batch = self.get_drops(data=data)
+            batch = self.get_drops()
             for entrie in batch:
                     
 

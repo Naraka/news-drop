@@ -1,1 +1,23 @@
-{% extends 'layout/base.html' %}
+{% extends "layout/base.html" %}
+
+{% block "content" %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Outstanding News</h1>
+  </div>
+  
+
+
+  <div class="container-fluid rounded shadow-sm p-3" style="border: 2px solid lightgray; margin-bottom: 20px;">
+    <h6> Word cloud </h6>
+    <p> View the most used words related to this keyword </p>
+      <div class="row">
+          <div class="col-lg-6">
+              {% include "drops/partials/grafoword.html" %}
+          </div>
+          <div class="col-lg-6">
+              {% include "drops/partials/barchar.html" %}
+          </div>
+      </div>
+  </div>
+
+{% endblock %}
