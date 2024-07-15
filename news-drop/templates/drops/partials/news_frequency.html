@@ -25,22 +25,35 @@
         options: {
             scales: {
                 x: {
-                    display: false,  // Ocultar el eje x
+                    display: true,
                     grid: {
-                        display: false  // Ocultar la cuadrícula del eje x
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    },
+                    ticks: {
+                        maxRotation: 0,  // Rotación máxima de las etiquetas
+                        autoSkip: true,  // Saltar automáticamente las etiquetas según el espacio disponible
+                        maxTicksLimit: 5,  // Límite máximo de etiquetas para mostrar
                     }
                 },
                 y: {
-                    display: false,  // Ocultar el eje y
+                    display: true,
                     beginAtZero: true,
                     grid: {
-                        display: false  // Ocultar la cuadrícula del eje y
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Frequency'
                     }
                 }
             },
             plugins: {
                 legend: {
-                    display: false  // Ocultar la leyenda
+                    display: false
                 }
             },
         }

@@ -38,7 +38,7 @@
 
 <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
   </head>
-  <body>
+  <body class= "bg-primary-subtle">
 
 {% comment %} dark-light-mode {% endcomment %}
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -137,99 +137,109 @@
 </svg>
 {% comment %} iconos {% endcomment %}
 
-
 {% comment %} navbar {% endcomment %}
-<header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="{% url 'index' %}">News Drop</a>
+<header>
 
-  <ul class="navbar-nav flex-row d-md-none">
-    <li class="nav-item text-nowrap">
-      <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <svg class="bi"><use xlink:href="#list"/></svg>
-      </button>
-    </li>
-  </ul>
-</header>
+    <nav class="navbar bg-body-tertiary fixed-top">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-start">
+        <!-- Botón del Navbar-toggler -->
+        <button class="navbar-toggler custom-navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation"
+        style="border: none; outline: none; padding: .25rem .5rem; font-size: 80%; background-color: transparent; transition: none !important; animation: none !important; box-shadow: none !important;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
-      <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="sidebarMenuLabel">News drop</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
+      
+  
+        <!-- Resto del contenido del Navbar -->
+        <a class="navbar-brand ms-5" href="{% url 'index' %}" style="background-color: transparent; box-shadow: none;">
+          News Dropped
+              {% comment %} <img src="{% static 'img/logo.jpg' %}" class="img-fluid" style="max-height: 50px;"> {% endcomment %}
+        </a>
+      </div>
+
+        <div class="dropdown text-end">
+          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://via.placeholder.com/32?text=?" alt="Placeholder" width="32" height="32" class="rounded-circle">
+          </a>
+          <ul class="dropdown-menu text-small" style="right: 0; left: auto;">
+            <li><a class="dropdown-item" href="#">New project...</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'signout' %}">Sign out</a></li>
+          </ul>
         </div>
-        <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="{% url 'index' %}">
-                <svg class="bi"><use xlink:href="#house-fill"/></svg>
-                Dashboard
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="{% url 'drops' %}">
-                <svg class="bi"><use xlink:href="#file-earmark"/></svg>
-                Drops
-              </a>
-            </li>
-          </ul>
 
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-            <span>Drops</span>
-            <a id="addDropButton" class="link-secondary" href="#" data-toggle="collapse" data-target="#dropForm" aria-expanded="false" aria-controls="dropForm" aria-label="Add a new drop">
-              <svg class="bi" width="1em" height="1em" fill="currentColor">
-                <use xlink:href="#plus-circle"/>
-              </svg>
-            </a>
-          </h6>
-
-          <div class="collapse" id="dropForm">
-            <form action="{% url 'drops' %}" method="POST">
-              {% csrf_token %}
-              <div class="row">
-                <div>
-                  <input type="text" class="form-control" placeholder="key_instance" name="key_instance">
-                </div>
-              </div>
-            </form>
+      
+        
+        <!-- Offcanvas Navbar -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">News dropped</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
-          
-          {% for dat in data %}
-          <ul class="nav flex-column mb-auto">
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href={% url "detail" dat.id %}>
-                <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
-                {{ dat.key_instance }}
+          <div class="offcanvas-body">
+            <!-- Sidebar links -->
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="{% url 'index' %}">
+                  <svg class="bi"><use xlink:href="#house-fill"/></svg>
+                  Dashboard
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2" href="{% url 'drops' %}">
+                  <svg class="bi"><use xlink:href="#file-earmark"/></svg>
+                  Drops
+                </a>
+              </li>
+            </ul>
+  
+            <!-- Add a new drop section -->
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
+              <span>Drops</span>
+              <a id="addDropButton" class="link-secondary" href="#" data-toggle="collapse" data-target="#dropForm" aria-expanded="false" aria-controls="dropForm" aria-label="Add a new drop">
+                <svg class="bi" width="1em" height="1em" fill="currentColor">
+                  <use xlink:href="#plus-circle"/>
+                </svg>
               </a>
-            </li>
-          </ul>
-          {% endfor %}
-
-          <hr class="my-3">
-
-          <ul class="nav flex-column mb-auto">
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="#">
-                <svg class="bi"><use xlink:href="#gear-wide-connected"/></svg>
-                Settings
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="{% url 'signout' %}">
-                <svg class="bi"><use xlink:href="#door-closed"/></svg>
-                Sign out
-              </a>
-            </li>
-          </ul>
+            </h6>
+            <div class="collapse" id="dropForm">
+              <form action="{% url 'drops' %}" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col">
+                    <input type="text" class="form-control" placeholder="key_instance" name="key_instance">
+                  </div>
+                </div>
+              </form>
+            </div>
+            
+            <!-- Data list -->
+            {% for dat in data %}
+            <ul class="nav flex-column mb-auto">
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center gap-2" href={% url "detail" dat.id %}>
+                  <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
+                  {{ dat.key_instance }}
+                </a>
+              </li>
+            </ul>
+            {% endfor %}
+          </div>
         </div>
       </div>
-    </div>
+    </nav>
+  </header>
+  
+
 {% comment %} navbar {% endcomment %}
 
-
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+<main class="container mt-5 pt-5">
+  <div class="row justify-content-center">
+    <main class="col-md-9 col-lg-10 px-md-4">
 
       {% if messages %}
           {% for message in messages %} 

@@ -129,7 +129,7 @@ USE_TZ = True
 import os
 
 #nombre de la carpeta en la que estan los estaticos cuando los carga la web
-STATIC_URL = "https://storage.googleapis.com/newsdropstatic/staticfiles/"
+STATIC_URL = "https://storage.googleapis.com/newsdropstatic/staticfiles3/"
 
 #path donde esta referenciada los staticos en local
 STATICFILES_DIRS = [

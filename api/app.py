@@ -232,21 +232,38 @@ async def most_frequent_time(key: str):
     
     cursor = connection.cursor(dictionary=True)
     query = """
-                    SELECT 
-                        DATE_FORMAT(published_date, '%H:00:00') AS hour
-                    FROM 
-                        newsdropbd.news
-                    WHERE 
-                        key_str = %s
-                    GROUP BY 
-                        hour
-                    ORDER BY 
-                        COUNT(*) DESC
-                    LIMIT 3;
-            """
+        WITH news_stats AS (
+            SELECT
+                DATE_FORMAT(published_date, '%m-%d %H:00:00') AS interval_published,
+                COUNT(*) AS count_per_interval,
+                (SELECT COUNT(*) FROM newsdropbd.news WHERE key_str = %s) AS total_news,
+                DATE_FORMAT(published_date, '%H:00:00') AS hour_only
+            FROM
+                newsdropbd.news
+            WHERE
+                key_str = %s
+            GROUP BY
+                interval_published,
+                hour_only
+        )
+        SELECT
+            interval_published,
+            count_per_interval,
+            CONCAT(ROUND((count_per_interval / total_news) * 100, 2), '%') AS percent_total,
+            ROUND(AVG(count_per_interval) OVER (PARTITION BY hour_only), 2) AS avg_per_day,
+            ROUND(MAX(count_per_interval) OVER (PARTITION BY hour_only), 2) AS max_per_day,
+            ROUND(MIN(count_per_interval) OVER (PARTITION BY hour_only), 2) AS min_per_day,
+            ROUND(STDDEV(count_per_interval) OVER (PARTITION BY hour_only), 2) AS stddev_per_day
+        FROM
+            news_stats
+        ORDER BY
+            count_per_interval DESC
+        LIMIT
+            5;
+    """
     
     try:
-        cursor.execute(query, (key,))
+        cursor.execute(query, (key,key))
         result = cursor.fetchall()
         return result
     except Error as e:

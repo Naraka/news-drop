@@ -17,7 +17,7 @@ spec:
       serviceAccountName: api-serviceaccount-kubernetes
       containers:
         - name: api-container-news-drop
-          image: gcr.io/news-drop/news-drop-api:0.3.5
+          image: gcr.io/news-drop/news-drop-api:0.3.6
           env:
             - name: DB_USER
               valueFrom:

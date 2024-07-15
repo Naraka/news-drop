@@ -1,7 +1,28 @@
-<div class="d-flex justify-content-center align-items-center">
-    <div class="list-group text-center">
-        {% for mosthour in most_frequent_time %}
-        <a class="list-group-item list-group-item-action display-4">{{ mosthour.hour }}</a>
-        {% endfor %}
-    </div>
-</div>
+<div class="table-responsive small">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col" class="text" title="Total news published during that interval">interval</th>
+                <th scope="col" class="text" title="Percentage that this interval represents of the total news published">percent_total</th>
+                <th scope="col" class="text" title="Total news published during that interval">count</th>
+                <th scope="col" class="text" title="Average number of news items published in that interval on a typical day">avg</th>
+                <th scope="col" class="text" title="The highest number of news items published in a single day during that interval">max</th>
+                <th scope="col" class="text" title="The smallest number of news items published in a single day during that interval">min</th>
+                <th scope="col" class="text" title="Variability of the number of news items published in that interval">stddev</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mosthour in most_frequent_time %}
+                <tr>
+                    <td class="text">{{ mosthour.interval_published }}</td>
+                    <td class="text">{{ mosthour.percent_total }}</td>
+                    <td class="text">{{ mosthour.count_per_interval }}</td>
+                    <td class="text">{{ mosthour.avg_per_day }}</td>
+                    <td class="text">{{ mosthour.max_per_day }}</td>
+                    <td class="text">{{ mosthour.min_per_day }}</td>
+                    <td class="text">{{ mosthour.stddev_per_day }}%</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>
