@@ -4,72 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-import requests
-from utils.config import BASE_URL
-
-
-def superuser_required(function):
-    def wrap(request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.is_superuser:
-            raise PermissionDenied
-        return function(request, *args, **kwargs)
-    return wrap
+from services.api_requests import *
+from utils.config import superuser_required
 
 def server_error_view(request):
     return redirect('drops')
 
 def health_check(request):
     return HttpResponse("OK", status=200)
-
-def more_frequent_word(key_instance, interval='1D'):
-    url = f'{BASE_URL}/get_more_frequent_word/{key_instance}'
-    params = {'interval': interval}
-
-    try:
-        response = requests.get(url, params=params)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return 'ERROR', response.status_code
-    except requests.exceptions.RequestException as e:
-        return 'ERROR', str(e)
-
-def get_news_frequency(key_instance, interval='1D'):
-    url = f'{BASE_URL}/get_news_frequency/{key_instance}'
-    params = {'interval': interval}
-
-    try:
-        response = requests.get(url, params=params)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return 'ERROR', response.status_code
-    except requests.exceptions.RequestException as e:
-        return 'ERROR', str(e)
-
-def most_frequenttime(key_instance, interval='1D'):
-    url = f'{BASE_URL}/most_frequent_time/{key_instance}'
-    params = {'interval': interval}
-
-    try:
-        response = requests.get(url, params=params)
-
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return 'ERROR', response.status_code
-    except requests.exceptions.RequestException as e:
-        return 'ERROR', str(e)
-def news_by_key(key_instance):
-    url = f'{BASE_URL}/news/{key_instance}'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return 'ERROR', response.status_code
 
 @login_required
 @superuser_required

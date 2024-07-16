@@ -1,28 +1,10 @@
 from django.shortcuts import render, redirect
-import requests
 from .forms import DropForm
 from django.contrib.auth.decorators import login_required
 from .models import Drops
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
-from utils.config import BASE_URL
-
-def superuser_required(function):
-    def wrap(request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.is_superuser:
-            raise PermissionDenied
-        return function(request, *args, **kwargs)
-    return wrap
-
-def post_bot(key_instance):
-    url = f'{BASE_URL}/post_bot/'
-    data = {"key_instance": key_instance}
-    response = requests.post(url, json=data)
-
-    if response.status_code == 200:
-        return response.text
-    else:
-        return response.status_code
+from utils.config import superuser_required
+from services.api_requests import get_news_frequency, more_frequent_word, most_frequenttime, news_by_key, delete_bot, post_bot
 
 @login_required
 @superuser_required
@@ -58,15 +40,6 @@ def index(request):
             return redirect("drops")
 
 
-def delete_bot(key_instance):
-    url = f'{BASE_URL}/delete_bots/{key_instance}'
-    response = requests.delete(url)
-
-    if response.status_code == 200:
-        print(response.text)
-    else:
-        print('ERROR', response.status_code)
-
 @login_required
 @superuser_required
 def delete_drop(request, drop_id):
@@ -78,56 +51,18 @@ def delete_drop(request, drop_id):
     else:
         return redirect("drops")
 
-
-
-
-def news_by_key(key_instance):
-    url = f'{BASE_URL}/news/{key_instance}'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return 'ERROR', response.status_code
-
-def more_frequent_word(key_instance):
-    url = f'{BASE_URL}/get_more_frequent_word/{key_instance}'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return 'ERROR', response.status_code
-
-def get_news_frequency(key_instance):
-    url = f'{BASE_URL}/get_news_frequency/{key_instance}'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return 'ERROR', response.status_code
-
-def most_frequenttime(key_instance):
-    url = f'{BASE_URL}/most_frequent_time/{key_instance}'
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return 'ERROR', response.status_code
-
 @login_required
 @superuser_required
 def detail(request, drop_id):
     if request.method == "GET":
         drop = Drops.objects.get(id=drop_id, user=request.user)
         data = Drops.objects.filter(user=request.user)
+        interval = request.GET.get('interval', '1D')
 
-        most_frequent_time = most_frequenttime(drop.key_instance)
         news = news_by_key(drop.key_instance)
-        bar_data = more_frequent_word(drop.key_instance)
-        news_frequency = get_news_frequency(drop.key_instance)
+        most_frequent_time = most_frequenttime(drop.key_instance, interval=interval)
+        bar_data = more_frequent_word(drop.key_instance, interval=interval)
+        news_frequency = get_news_frequency(drop.key_instance, interval=interval)
 
 
         context={
@@ -137,6 +72,7 @@ def detail(request, drop_id):
             "bar_data":bar_data,
             "news_frequency":news_frequency,
             "most_frequent_time":most_frequent_time,
+            "selected_interval": interval,
         }
 
         return render(request,"drops/detail.html",context)

@@ -1,0 +1,48 @@
+<canvas id="scatterChart" width="300" height="225"></canvas>
+<script>
+    const dataFromDjangoBar = {{ bar_data|safe }};
+
+    // Preparar los datos para el gráfico de dispersión
+    const scatterData = dataFromDjangoBar.map(item => ({
+        x: item.word,         // Usamos 'word' como la coordenada x (etiqueta)
+        y: item.frequency     // Usamos 'frequency' como la coordenada y (frecuencia)
+    }));
+
+    const dataScatter = {
+        datasets: [{
+            label: 'Frequency',
+            data: scatterData,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgb(54, 162, 235)',
+            borderWidth: 1
+        }]
+    };
+
+    const configScatter = {
+        type: 'scatter',
+        data: dataScatter,
+        options: {
+            scales: {
+                x: {
+                    type: 'category',   // Configuración específica para el eje x como categorías (etiquetas)
+                    title: {
+                        display: true,
+                        text: 'Words'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Frequency'
+                    }
+                }
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('scatterChart').getContext('2d');
+        var myChart = new Chart(ctx, configScatter);
+    });
+</script>
