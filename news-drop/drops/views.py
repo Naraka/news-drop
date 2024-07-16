@@ -5,9 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Drops
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-
-BASE_URL = "http://34.118.234.43:80"
-# BASE_URL = "http://127.0.0.1:80"
+from utils.config import BASE_URL
 
 def superuser_required(function):
     def wrap(request, *args, **kwargs):

@@ -162,27 +162,36 @@ def process_titles(json_list):
 
 
 @app.get("/get_more_frequent_word/{key}")
-async def get_more_frequent_word(key: str):
+async def get_more_frequent_word(key: str, interval: str = '1D'):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = """
+    
+    # Definir el intervalo de tiempo basado en el parámetro recibido
+    if interval == '1D':
+        time_interval = 'INTERVAL 1 DAY'
+    elif interval == '7D':
+        time_interval = 'INTERVAL 7 DAY'
+    elif interval == '1M':
+        time_interval = 'INTERVAL 30 DAY'
+    else:
+        raise HTTPException(status_code=400, detail="Interval parameter must be '1day', '7days', or '30days'")
+    
+    query = f"""
         SELECT title
         FROM newsdropbd.news
         WHERE key_str = %s
-        AND published_date >= NOW() - INTERVAL 1 DAY
+        AND published_date >= NOW() - {time_interval}
         ORDER BY published_date DESC;
     """
 
-
-    
     try:
         cursor.execute(query, (key,))
         result = cursor.fetchall()
         return process_titles(result)
-    except Error as e:
+    except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
@@ -193,13 +202,22 @@ async def get_more_frequent_word(key: str):
 
 
 @app.get("/get_news_frequency/{key}")
-async def get_news_frequency(key: str):
+async def get_news_frequency(key: str, interval: str = '1D'):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = """
+    
+    if interval == '1D':
+        time_interval = 'INTERVAL 1 DAY'
+    elif interval == '7D':
+        time_interval = 'INTERVAL 7 DAY'
+    elif interval == '1M':
+        time_interval = 'INTERVAL 30 DAY'
+    else:
+        raise HTTPException(status_code=400, detail="Interval parameter must be '1day', '7days', or '30days'")
+    query = f"""
                 SELECT
                     DATE_FORMAT(published_date, '%Y-%m-%d %H:00:00') AS interval_published,
                     COUNT(*) AS count_per_interval
@@ -207,6 +225,7 @@ async def get_news_frequency(key: str):
                     newsdropbd.news
                 WHERE
                     key_str = %s
+                    AND published_date >= NOW() - {time_interval}
                 GROUP BY
                     interval_published
                 ORDER BY
@@ -225,13 +244,24 @@ async def get_news_frequency(key: str):
 
 
 @app.get("/most_frequent_time/{key}")
-async def most_frequent_time(key: str):
+async def most_frequent_time(key: str, interval: str = '1D'):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = """
+    
+    # Definir el intervalo de tiempo basado en el parámetro recibido
+    if interval == '1D':
+        time_interval = 'INTERVAL 1 DAY'
+    elif interval == '7D':
+        time_interval = 'INTERVAL 7 DAY'
+    elif interval == '1M':
+        time_interval = 'INTERVAL 30 DAY'
+    else:
+        raise HTTPException(status_code=400, detail="Interval parameter must be '1day', '7days', or '30days'")
+    
+    query = f"""
         WITH news_stats AS (
             SELECT
                 DATE_FORMAT(published_date, '%m-%d %H:00:00') AS interval_published,
@@ -242,6 +272,7 @@ async def most_frequent_time(key: str):
                 newsdropbd.news
             WHERE
                 key_str = %s
+                AND published_date >= NOW() - {time_interval}
             GROUP BY
                 interval_published,
                 hour_only

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: django-container-news-drop
-        image: gcr.io/news-drop/django-container-news-drop:0.3.9
+        image: gcr.io/news-drop/django-container-news-drop:0.4.0
         env:
         - name: SECRET_KEY
           valueFrom:
