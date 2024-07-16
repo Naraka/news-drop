@@ -13,7 +13,6 @@ def index(request):
         drops = Drops.objects.filter(user=request.user)
         return render(request, "drops/index.html", {
             "data": drops,
-            "form": DropForm()
         })
     else:
         bot_form = DropForm(request.POST)
@@ -26,13 +25,16 @@ def index(request):
                 newbot = bot_form.save(commit=False)
                 newbot.user = request.user
                 newbot.key_instance = newbot.key_instance.lower()
-                newbot.save()
-                messages.success(request, 'Bot created successfully.')
                 try:
-                    post_bot(key_instance)
-                except Exception as e:
-                    messages.error(request, f'Error posting bot: {str(e)}')
-                    return redirect("drops")
+                    newbot.save()
+                    messages.success(request, 'Bot created successfully.')
+                    try:
+                        post_bot(key_instance)
+                    except Exception as e:
+                        messages.error(request, f'Error posting bot: {str(e)}')
+                        return redirect("drops")
+                except ValueError as e:
+                    messages.error(request, str(e))
                 
                 return redirect("drops")
         else:

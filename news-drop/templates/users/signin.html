@@ -24,6 +24,7 @@
               <label for="floatingPassword">Password</label>
             </div>
             <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Sign in</button>
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
             <small class="text-body-secondary">Don't have an account?</small>
             <a class="text-body-secondary"href="{% url 'signup' %}">Sign up now</a>
           </form>

@@ -2,7 +2,6 @@ from django.shortcuts import render
 from drops.models import Drops
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from services.api_requests import *
 from utils.config import superuser_required

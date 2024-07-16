@@ -1,7 +1,7 @@
 {% extends "layout/base.html" %}
 
 {% block "content" %}
-{% if most_frequent_time %}
+{% if bar_data %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center shadow-lg p-3 mb-5 bg-body-tertiary rounded mt-5">
   <h1 class="h2">{{drop.key_instance}}</h1>
   <div class="dropdown">
@@ -35,7 +35,21 @@
       </div>
   </div>
 
+{% else %}
+<div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
+<script>
+setTimeout(function() {
+    location.reload();
+}, 10000);
+</script>
+{% endif %}
+
+{% if news %}
   <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
     <h6>Breaking news</h6>
     <p>See the latest news and stay informed</p>
@@ -57,6 +71,21 @@
     </div>
   </div>
 
+  {% else %}
+  <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+      <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+      </div>
+  </div>
+  
+  <script>
+  setTimeout(function() {
+      location.reload();
+  }, 10000);
+  </script>
+  {% endif %}
+
+  {% if news_frequency and most_frequent_time %}
   <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
   <h6> Hour frequency </h6>
   <p> Discover the most frequent times of publications and their distribution over time </p>
@@ -72,10 +101,7 @@
 
 </div>
 
-
-
 {% else %}
-
 <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
     <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -87,8 +113,6 @@ setTimeout(function() {
     location.reload();
 }, 10000);
 </script>
-
-
-
 {% endif %}
+
 {% endblock %}

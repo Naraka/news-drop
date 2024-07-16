@@ -65,7 +65,7 @@ async def get_news_by_key(key: str):
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 6"
+    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 4"
     
     try:
         cursor.execute(query, (key,))

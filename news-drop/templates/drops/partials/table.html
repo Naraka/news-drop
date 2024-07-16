@@ -1,49 +1,70 @@
-<div class="table-responsive small">
-  <table class="table table-striped table-hover">
-      <thead>
-          <tr>
-              <th scope="col" class="text-start">Key Instance</th>
-              <th scope="col" class="text-end">Actions</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for dat in data %}
-              <tr>
-                  <td class="text-start">{{ dat.key_instance }}</td>
-                  <td class="text-end">
-                      <a href="{% url 'detail' dat.id %}" class="btn btn-primary btn-sm action-btn">Ver</a>
-                      <a href="{% url 'delete_drop' dat.id %}" class="btn btn-danger btn-sm action-btn">Borrar</a>
-                      <div class="spinner-border text-primary spinner-custom" role="status" style="display: none;">
-                      </div>
-                  </td>
-              </tr>
-          {% endfor %}
-      </tbody>
-  </table>
-</div>
+<div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded mt-5">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col" class="text-start">Key Instance</th>
+                <th scope="col" class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dat in data %}
+                <tr>
+                    <td class="text-start">{{ dat.key_instance }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'detail' dat.id %}" class="btn btn-primary btn-sm action-btn">Ver</a>
+                        <a href="{% url 'delete_drop' dat.id %}" class="btn btn-danger btn-sm action-btn">Borrar</a>
+                        <div class="spinner-border text-primary spinner-custom" role="status" style="display: none;">
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </div>  
 
 
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const actionButtons = document.querySelectorAll('.action-btn');
-
-  actionButtons.forEach(button => {
-      button.addEventListener('click', function(event) {
-          event.preventDefault();
-          const parentCell = button.parentNode;
-          const buttons = parentCell.querySelectorAll('.action-btn');
-          const spinner = parentCell.querySelector('.spinner-border');
-
-          // Hide buttons and show spinner
-          buttons.forEach(btn => btn.style.display = 'none');
-          spinner.style.display = 'inline-block';
-
-          // Redirect to the href of the clicked button after a short delay
-          setTimeout(() => {
-              window.location.href = button.href;
-          }, 0); // Adjust the delay as needed
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const actionButtons = document.querySelectorAll('.action-btn');
+    
+      actionButtons.forEach(button => {
+          button.addEventListener('click', function(event) {
+              event.preventDefault();
+              const parentCell = button.parentNode;
+              const buttons = parentCell.querySelectorAll('.action-btn');
+              const spinner = parentCell.querySelector('.spinner-border');
+    
+              // Hide buttons and show spinner
+              buttons.forEach(btn => btn.style.display = 'none');
+              spinner.style.display = 'inline-block';
+    
+              // Redirect to the href of the clicked button after a short delay
+              setTimeout(() => {
+                  window.location.href = button.href;
+              }, 0); // Adjust the delay as needed
+          });
       });
-  });
-});
-</script>
+    
+      // Function to reset the buttons and spinners
+      function resetButtonsAndSpinners() {
+        const spinners = document.querySelectorAll('.spinner-border');
+        spinners.forEach(spinner => {
+            spinner.style.display = 'none';
+        });
+    
+        const buttons = document.querySelectorAll('.action-btn');
+        buttons.forEach(button => {
+            button.style.display = 'inline-block';
+        });
+      }
+    
+      // Reset buttons and spinners on page load and on pageshow event
+      resetButtonsAndSpinners();
+    
+      window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+          resetButtonsAndSpinners();
+        }
+      });
+    });
+    </script>
