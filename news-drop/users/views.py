@@ -5,7 +5,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-
+from .forms import ImageUserform
+from .models import ImageUser
 
 
 
@@ -82,11 +83,30 @@ def profile(request):
         else:
             messages.error(request, 'Please correct the error below.')
     else:
-        form = PasswordChangeForm(request.user)
+        imageformuser = ImageUserform()
+        iamgeuser = ImageUser.objects.filter(user=request.user)
 
     context = {
-        "form": form,
-        "user": request.user
+        "user": request.user,
+        "imageformuser": imageformuser,
+        "iamgeuser": iamgeuser
 
     }
     return render(request, 'users/profile.html', context=context)
+
+
+@login_required
+@superuser_required
+def upload_image(request):
+    if request.method == 'POST':
+        form = ImageUserform(request.POST, request.FILES)
+        if form.is_valid():
+            newimage = form.save(commit=False)
+            newimage.user = request.user
+            newimage.save()
+            messages.success(request, 'Image uploaded successfully!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        return redirect("/")

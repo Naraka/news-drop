@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drops',
+    'storages',
     'users'
 ]
 
@@ -68,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'users.context_processors.profile_image',
             ],
         },
     },
@@ -126,10 +128,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-import os
 
-#nombre de la carpeta en la que estan los estaticos cuando los carga la web
-STATIC_URL = "https://storage.googleapis.com/newsdropstatic/staticfiles3/"
+# #nombre de la carpeta en la que estan los estaticos cuando los carga la web
+# STATIC_URL = "https://storage.googleapis.com/newsdropstatic/staticfiles3/"
 
 #path donde esta referenciada los staticos en local
 STATICFILES_DIRS = [
@@ -139,6 +140,49 @@ STATICFILES_DIRS = [
 #donde deberia star el buket
 #cuando collecstatic path y nombre de la carpeta donde se van
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+from google.oauth2 import service_account
+
+if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS']
+    )
+else:
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        os.path.join(BASE_DIR, 'news-drop-796857b8eb91.json')
+    )
+
+GS_PROJECT_ID = 'news-drop'
+GS_MEDIA_BUCKET_NAME = 'djangobucket-newsdropped'
+GS_STATIC_BUCKET_NAME = 'djangostatic-bucket'
+
+STORAGES = {
+    'default': {
+        'BACKEND': 'storages.backends.gcloud.GoogleCloudStorage',
+        'OPTIONS': {
+            'bucket_name': GS_MEDIA_BUCKET_NAME,
+            'project_id': GS_PROJECT_ID,
+            'credentials': GS_CREDENTIALS,
+        },
+    },
+    'staticfiles': {
+        'BACKEND': 'storages.backends.gcloud.GoogleCloudStorage',
+        'OPTIONS': {
+            'bucket_name': GS_STATIC_BUCKET_NAME,
+            'project_id': GS_PROJECT_ID,
+            'credentials': GS_CREDENTIALS,
+        },
+    },
+}
+
+MEDIA_URL = f'https://storage.googleapis.com/{GS_MEDIA_BUCKET_NAME}/media/'
+
+STATIC_URL = f'https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/static/'
+
+
+
+
 
 
 # Default primary key field type
