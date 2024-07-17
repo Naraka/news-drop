@@ -1,0 +1,31 @@
+{% extends "layout/base.html" %}
+
+{% block "content" %}
+
+
+<div class="modal-header p-5 pb-4 border-bottom-0">
+    <h1 class="fw-bold mb-0 fs-2">{{ user.username }}</h1>
+</div>
+<div class="modal-body p-5 pt-0">
+    <form action="{% url 'profile' %}" method="POST">
+        {% csrf_token %}
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control rounded-3" id="id_old_password" name="old_password" placeholder="Current Password">
+            <label for="id_old_password">Current Password</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control rounded-3" id="id_new_password1" name="new_password1" placeholder="New Password">
+            <label for="id_new_password1">New Password</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control rounded-3" id="id_new_password2" name="new_password2" placeholder="Confirm New Password">
+            <label for="id_new_password2">Confirm New Password</label>
+        </div>
+        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Change Password</button>
+        <small class="text-body-secondary">Ensure your password is strong and secure.</small>
+    </form>
+</div>
+
+
+
+{% endblock "content" %}
