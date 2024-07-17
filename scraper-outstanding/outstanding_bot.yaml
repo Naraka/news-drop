@@ -15,6 +15,13 @@ spec:
       containers:
       - name: news-drop-container-1
         image: gcr.io/news-drop/outstanding:0.0.2
+        resources:
+          limits:
+            cpu: "10m"
+            memory: "50Mi"
+          requests:
+            cpu: "4m"
+            memory: "20Mi"
         env:
           - name: DB_USER
             valueFrom:
