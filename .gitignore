@@ -6,6 +6,6 @@ venv/
 __pycache__/
 
 # Research #
+news-drop/news-drop-796857b8eb91.json
 /front/Research
 scraper/bot.yaml
-news-drop/newsdrop/settings.py
