@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Drops
 from django.contrib import messages
 from utils.config import superuser_required
-from services.api_requests import get_news_frequency, more_frequent_word, most_frequenttime, news_by_key, delete_bot, post_bot
+from services.api_requests import get_news_frequency, more_frequent_word, most_frequenttime, news_by_key, delete_bot, post_bot, sentiment
 
 @login_required
 @superuser_required
@@ -59,12 +59,13 @@ def detail(request, drop_id):
     if request.method == "GET":
         drop = Drops.objects.get(id=drop_id, user=request.user)
         data = Drops.objects.filter(user=request.user)
-        interval = request.GET.get('interval', '1D')
+        interval = request.GET.get('interval', '1M')
 
         news = news_by_key(drop.key_instance)
         most_frequent_time = most_frequenttime(drop.key_instance, interval=interval)
         bar_data = more_frequent_word(drop.key_instance, interval=interval)
         news_frequency = get_news_frequency(drop.key_instance, interval=interval)
+        sentiment_data = sentiment(drop.key_instance)
 
 
         context={
@@ -75,6 +76,7 @@ def detail(request, drop_id):
             "news_frequency":news_frequency,
             "most_frequent_time":most_frequent_time,
             "selected_interval": interval,
+            "sentiment_data": sentiment_data,
         }
 
         return render(request,"drops/detail.html",context)

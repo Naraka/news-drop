@@ -84,15 +84,59 @@
     <div class="row">
         <div class="col-lg-6">
             {% include "drops/partials/news_frequency.html" %}
-        </div>
-        <div class="col-lg-6">
+          </div>
+          <div class="col-lg-6">
             {% include "drops/partials/most_frequent_time.html" %}
+          </div>
         </div>
-    </div>
-</div>
+      </div>
+    
 
+      <style>
+        .emoticons {
+            position: absolute;
+            top: 25px;
+            bottom: 25px;
+            left: -10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 30px;
+            color: black;
+        }
+    
+        .emoji-top {
+            align-self: flex-start;
+        }
+    
+        .emoji-bottom {
+            align-self: flex-end;
+        }
+    
+        #sentiment_line_chart {
+            max-width: 100%;
+        }
+    </style>
+      
+    
+    
+    
 
-
-
+    <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+      <div class="row">
+          <div class="col-12">
+                  <h6>Sentiment Trends</h6>
+                  <p>View positive and negative sentiments over time</p>
+                  <div class="position-relative">
+                    {% include "drops/partials/sentiment_line.html" %}
+                      <div class="emoticons">
+                          <div class="emoji-top">😊</div>
+                          <div class="emoji-bottom">😢</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
 
 {% endblock %}

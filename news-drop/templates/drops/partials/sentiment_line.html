@@ -1,0 +1,65 @@
+<canvas id="sentiment_line_chart" height="130%"></canvas>
+<script>
+    // Datos obtenidos de Django (ya formateados correctamente)
+    const sentiment_data_s = {{ sentiment_data|safe }};
+
+    // Extraer etiquetas, puntuaciones y magnitudes para el gráfico
+    const labels_sen = sentiment_data_s.map(item => item.day);
+    const score_line = sentiment_data_s.map(item => item.avg_score);
+    const score_line_magnitude = sentiment_data_s.map(item => item.avg_magnitude);
+
+    // Configurar datos y opciones para el gráfico de líneas
+    const dataLine_se = {
+        labels: labels_sen,
+        datasets: [
+            {
+                label: 'Sentiment Score',
+                data: score_line,
+                fill: false,
+                borderColor: 'rgb(54, 162, 235)',
+                tension: 0.4
+            },
+            {
+                label: 'Sentiment Magnitude',
+                data: score_line_magnitude,
+                fill: false,
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.4
+            }
+        ]
+    };
+
+    const configLine_s = {
+        type: 'line',
+        data: dataLine_se,
+        options: {
+            scales: {
+                x: {
+                    display: true,
+                },
+                y: {
+                    display: true, // Mostrar el eje y
+                    grid: {
+                        display: true, // Mostrar líneas de fondo
+                        color: 'rgba(0, 0, 0, 0.1)' // Color de las líneas de fondo
+                    },
+                    ticks: {
+                        display: false, // Ocultar números del eje y
+                    },
+                    beginAtZero: true,
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true  // Mostrar la leyenda para diferenciar las líneas
+                }
+            }
+        }
+    };
+
+    // Crear el gráfico de líneas cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx_s = document.getElementById('sentiment_line_chart').getContext('2d');
+        new Chart(ctx_s, configLine_s);
+    });
+</script>

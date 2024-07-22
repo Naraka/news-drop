@@ -16,6 +16,19 @@ def more_frequent_word(key_instance, interval='1D'):
     except requests.exceptions.RequestException as e:
         return 'ERROR', str(e)
 
+def sentiment(key_instance):
+    url = f'{BASE_URL}/sentiment/{key_instance}'
+
+    try:
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return 'ERROR', response.status_code
+    except requests.exceptions.RequestException as e:
+        return 'ERROR', str(e)
+
 def get_news_frequency(key_instance, interval='1D'):
     url = f'{BASE_URL}/get_news_frequency/{key_instance}'
     params = {'interval': interval}

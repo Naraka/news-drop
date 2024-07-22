@@ -16,18 +16,16 @@ def health_check(request):
 @superuser_required
 def index(request):
     if request.method == "GET":
-        key_instance = "outstanding_es_ES"  # Ejemplo de key_instance fija, puedes obtenerla dinámicamente según tus necesidades
+        key_instance = "outstanding_es_ES"
 
-        # Obtener parámetros del filtro del front-end (ejemplo)
-        interval = request.GET.get('interval', '1D')
+        interval = request.GET.get('interval', '7D')
 
-        # Llamar a las funciones que envían solicitudes a FastAPI
         bar_data = more_frequent_word(key_instance, interval=interval)
         news_frequency = get_news_frequency(key_instance, interval=interval)
         most_frequent_time = most_frequenttime(key_instance, interval=interval)
+        sentiment_data = sentiment(key_instance) 
         news = news_by_key(key_instance)
 
-        # Obtener objetos de Django relacionados con el usuario autenticado
         drops = Drops.objects.filter(user=request.user)
 
         return render(request, "index.html", {
@@ -37,6 +35,7 @@ def index(request):
             "most_frequent_time": most_frequent_time,
             "news": news,
             "selected_interval": interval,
+            "sentiment_data": sentiment_data,
         })
     else:
         return redirect("/")

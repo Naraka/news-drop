@@ -302,3 +302,39 @@ async def most_frequent_time(key: str, interval: str = '1D'):
     finally:
         cursor.close()
         connection.close()
+
+
+@app.get("/sentiment/{key}")
+async def sentiment(key: str):
+    connection = create_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Error connecting to the database")
+    
+    cursor = connection.cursor(dictionary=True)
+    
+    query = f"""
+                    SELECT
+                        DATE_FORMAT(published_date, '%Y-%m-%d') AS day,
+                        AVG(sentiment_score) AS avg_score,
+                        AVG(sentiment_magnitude) AS avg_magnitude
+                    FROM
+                        newsdropbd.news
+                    WHERE
+                        key_str = %s
+                    GROUP BY
+                        DATE_FORMAT(published_date, '%Y-%m-%d')
+                    ORDER BY
+                        day DESC
+                    LIMIT 5;
+
+    """
+    
+    try:
+        cursor.execute(query, (key,))
+        result = cursor.fetchall()
+        return result
+    except Error as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()

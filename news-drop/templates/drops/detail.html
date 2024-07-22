@@ -1,7 +1,6 @@
 {% extends "layout/base.html" %}
 
 {% block "content" %}
-{% if bar_data %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center shadow-lg p-3 mb-5 bg-body-tertiary rounded mt-5">
   <h1 class="h2">{{drop.key_instance}}</h1>
   <div class="dropdown">
@@ -21,8 +20,9 @@
     </ul>
   </div>
 </div>
+{% if bar_data %}
 
-  <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+<div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
     <h6> Word cloud </h6>
     <p> View the most used words related to this keyword </p>
       <div class="row">
@@ -35,6 +35,64 @@
       </div>
   </div>
 
+{% else %}
+<div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+<script>
+setTimeout(function() {
+    location.reload();
+}, 10000);
+</script>
+{% endif %}
+
+
+{% if sentiment_data %}
+<style>
+  .emoticons {
+      position: absolute;
+      top: 25px;
+      bottom: 25px;
+      left: -10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 30px;
+      color: black;
+  }
+
+  .emoji-top {
+      align-self: flex-start;
+  }
+
+  .emoji-bottom {
+      align-self: flex-end;
+  }
+
+  #sentiment_line_chart {
+      max-width: 100%;
+  }
+</style>
+
+<div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+<div class="row">
+    <div class="col-12">
+            <h6>Sentiment Trends</h6>
+            <p>View positive and negative sentiments over time</p>
+            <div class="position-relative">
+              {% include "drops/partials/sentiment_line.html" %}
+                <div class="emoticons">
+                    <div class="emoji-top">😊</div>
+                    <div class="emoji-bottom">😢</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% else %}
 <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
     <div class="spinner-border text-primary" role="status">
@@ -113,6 +171,11 @@ setTimeout(function() {
     location.reload();
 }, 10000);
 </script>
+
+
+
+
+
 {% endif %}
 
 {% endblock %}
