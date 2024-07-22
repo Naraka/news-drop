@@ -1,13 +1,14 @@
-from google.cloud import language_v1
+from google.cloud import language_v2
 import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
+import time
 
 def analyze(news):
-    client = language_v1.LanguageServiceClient()
-    document = language_v1.Document(
-        content=news, type_=language_v1.Document.Type.PLAIN_TEXT
+    client = language_v2.LanguageServiceClient()
+    document = language_v2.Document(
+        content=news, type_=language_v2.Document.Type.PLAIN_TEXT
     )
     return client.analyze_sentiment(request={"document": document})
 
@@ -42,7 +43,7 @@ def add_sentiment():
     query = """ SELECT * 
                 FROM newsdropbd.news 
                 ORDER BY id DESC 
-                LIMIT 100;
+                LIMIT 10000;
             """
     
     cursor.execute(query)
@@ -54,6 +55,7 @@ def add_sentiment():
             update_query = "UPDATE newsdropbd.news SET sentiment_score = %s, sentiment_magnitude = %s WHERE id = %s;"
             cursor.execute(update_query, (data.document_sentiment.score, data.document_sentiment.magnitude, new["id"]))
             connection.commit()
+            time.sleep(20)
         else:
             pass
 
