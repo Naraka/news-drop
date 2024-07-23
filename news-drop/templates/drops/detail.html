@@ -3,23 +3,43 @@
 {% block "content" %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center shadow-lg p-3 mb-5 bg-body-tertiary rounded mt-5">
   <h1 class="h2">{{drop.key_instance}}</h1>
-  <div class="dropdown">
-    <button class="btn btn-sm btn-transparent dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
-      {{selected_interval}}
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-      <li><a class="dropdown-item" href="?interval=1D">1D</a></li>
-      <li><a class="dropdown-item" href="?interval=7D">7D</a></li>
-      <li><a class="dropdown-item" href="?interval=1M">1M</a></li>
-    </ul>
+  <div class="d-flex flex-column flex-md-row ml-auto">
+    <!-- Interval Dropdown -->
+    <div class="dropdown me-2 mb-2 mb-md-0">
+      <button class="btn btn-sm btn-transparent dropdown-toggle" type="button" id="dropdownMenuButtonInterval" data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        {{selected_interval}}
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonInterval">
+        <li><a class="dropdown-item" href="?interval=1D&country={{selected_country_code}}&language={{selected_language_code}}">1D</a></li>
+        <li><a class="dropdown-item" href="?interval=7D&country={{selected_country_code}}&language={{selected_language_code}}">7D</a></li>
+        <li><a class="dropdown-item" href="?interval=1M&country={{selected_country_code}}&language={{selected_language_code}}">1M</a></li>
+      </ul>
+    </div>
+
+    <!-- Country Dropdown -->
+    <div class="dropdown">
+      <button class="btn btn-sm btn-transparent dropdown-toggle" type="button" id="dropdownMenuButtonCountry" data-bs-toggle="dropdown" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10z"></path>
+        </svg>
+        {{selected_country}}
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonCountry">
+        <li><a class="dropdown-item" href="?interval={{selected_interval_code}}&country=US&language=en">United States</a></li>
+        <li><a class="dropdown-item" href="?interval={{selected_interval_code}}&country=ES&language=es">España</a></li>
+      </ul>
+    </div>
   </div>
 </div>
+
 {% if bar_data %}
 
 <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">

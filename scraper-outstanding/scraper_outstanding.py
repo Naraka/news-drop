@@ -37,7 +37,9 @@ class News:
             "published_date": self._published_date_clean(entrie.published),
             "description": self._description_clean(entrie.description),
             "source": entrie.source.title,
-            "key_str": f"outstanding_{self.language}_{self.country}",
+            "key_str": "outstanding",
+            "language": self.language,
+            "country": self.country,
         }
         return json
 
@@ -105,13 +107,17 @@ class News:
                     AND description = %s 
                     AND source = %s 
                     AND key_str = %s
+                    AND language = %s
+                    AND country = %s
                 """, (
                     entrie["title"],
                     entrie["link"],
                     entrie["published_date"],
                     entrie["description"],
                     entrie["source"],
-                    entrie["key_str"]
+                    entrie["key_str"],
+                    entrie["language"],
+                    entrie["country"]
                 ))
                 existing_row = cursor.fetchone()
 
@@ -119,15 +125,17 @@ class News:
                     print("La fila completa ya existe en la base de datos. No se insertará nada.")
                 else:
                     cursor.execute("""
-                        INSERT INTO news (title, link, published_date, description, source, key_str)
-                        VALUES (%s, %s, %s, %s, %s, %s)
+                        INSERT INTO news (title, link, published_date, description, source, key_str, language, country)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     """, (
                         entrie["title"],
                         entrie["link"],
                         entrie["published_date"],
                         entrie["description"],
                         entrie["source"],
-                        entrie["key_str"]
+                        entrie["key_str"],
+                        entrie["language"],
+                        entrie["country"]
                     ))
                     conn.commit()
 

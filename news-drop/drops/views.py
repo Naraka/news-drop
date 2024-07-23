@@ -59,24 +59,30 @@ def detail(request, drop_id):
     if request.method == "GET":
         drop = Drops.objects.get(id=drop_id, user=request.user)
         data = Drops.objects.filter(user=request.user)
-        interval = request.GET.get('interval', '1M')
+        selected_interval = request.GET.get('interval', '7D')
+        selected_language  = request.GET.get('language', 'en')
+        selected_country  = request.GET.get('country', 'US')
 
-        news = news_by_key(drop.key_instance)
-        most_frequent_time = most_frequenttime(drop.key_instance, interval=interval)
-        bar_data = more_frequent_word(drop.key_instance, interval=interval)
-        news_frequency = get_news_frequency(drop.key_instance, interval=interval)
-        sentiment_data = sentiment(drop.key_instance)
-
+        bar_data = more_frequent_word(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        sentiment_data = sentiment(drop.key_instance, language=selected_language, country=selected_country) 
+        news_frequency = get_news_frequency(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        most_frequent_time = most_frequenttime(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        news = news_by_key(drop.key_instance, language=selected_language, country=selected_country)
 
         context={
-            "news":news,
-            "data":data,
             "drop":drop,
-            "bar_data":bar_data,
-            "news_frequency":news_frequency,
-            "most_frequent_time":most_frequent_time,
-            "selected_interval": interval,
+            "data":data,
+            "bar_data": bar_data,
+            "news_frequency": news_frequency,
+            "most_frequent_time": most_frequent_time,
+            "news": news,
             "sentiment_data": sentiment_data,
+            "selected_interval": selected_interval,
+            "selected_country": selected_country,
+            "selected_language": selected_language,
+            "selected_interval_code": selected_interval,
+            "selected_country_code": selected_country,
+            "selected_language_code": selected_language,
         }
 
         return render(request,"drops/detail.html",context)

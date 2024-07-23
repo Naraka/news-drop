@@ -59,16 +59,16 @@ async def get_news():
 
 
 @app.get("/news/{key}")
-async def get_news_by_key(key: str):
+async def get_news_by_key(key: str, language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s ORDER BY published_date DESC LIMIT 4"
+    query = "SELECT * FROM newsdropbd.news WHERE key_str = %s AND language = %s AND country = %s ORDER BY published_date DESC LIMIT 4"
     
     try:
-        cursor.execute(query, (key,))
+        cursor.execute(query, (key, language, country,))
         result = cursor.fetchall()
         return result
     except Error as e:
@@ -139,8 +139,14 @@ def clean_text(text):
     cleaned_text = ' '.join(cleaned_text.split())
     return cleaned_text
 
-def process_titles(json_list):
-    stop_words = set(stopwords.words('spanish'))
+def process_titles(json_list, language: str = "en"):
+    if language == "es":
+        language = "spanish"
+    elif language == "en":
+        language = "english"
+    else:
+        raise "language no asigned"
+    stop_words = set(stopwords.words(language))
     word_freq = Counter()
 
     for json_obj in json_list:
@@ -148,7 +154,7 @@ def process_titles(json_list):
         
         cleaned_title = clean_text(title)
         
-        word_tokens = word_tokenize(cleaned_title, language='spanish')
+        word_tokens = word_tokenize(cleaned_title, language=language)
         
         for word in word_tokens:
             if word.lower() not in stop_words:
@@ -162,7 +168,7 @@ def process_titles(json_list):
 
 
 @app.get("/get_more_frequent_word/{key}")
-async def get_more_frequent_word(key: str, interval: str = '1D'):
+async def get_more_frequent_word(key: str, interval: str = '1D', language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
@@ -184,13 +190,15 @@ async def get_more_frequent_word(key: str, interval: str = '1D'):
         FROM newsdropbd.news
         WHERE key_str = %s
         AND published_date >= NOW() - {time_interval}
+        AND language = %s
+        AND country = %s
         ORDER BY published_date DESC;
     """
 
     try:
-        cursor.execute(query, (key,))
+        cursor.execute(query, (key, language, country,))
         result = cursor.fetchall()
-        return process_titles(result)
+        return process_titles(result, language=language)
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
@@ -202,7 +210,7 @@ async def get_more_frequent_word(key: str, interval: str = '1D'):
 
 
 @app.get("/get_news_frequency/{key}")
-async def get_news_frequency(key: str, interval: str = '1D'):
+async def get_news_frequency(key: str, interval: str = '1D', language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
@@ -226,6 +234,8 @@ async def get_news_frequency(key: str, interval: str = '1D'):
                 WHERE
                     key_str = %s
                     AND published_date >= NOW() - {time_interval}
+                    AND language = %s
+                    AND country = %s
                 GROUP BY
                     interval_published
                 ORDER BY
@@ -233,7 +243,7 @@ async def get_news_frequency(key: str, interval: str = '1D'):
             """
     
     try:
-        cursor.execute(query, (key,))
+        cursor.execute(query, (key, language, country,))
         result = cursor.fetchall()
         return result
     except Error as e:
@@ -244,7 +254,7 @@ async def get_news_frequency(key: str, interval: str = '1D'):
 
 
 @app.get("/most_frequent_time/{key}")
-async def most_frequent_time(key: str, interval: str = '1D'):
+async def most_frequent_time(key: str, interval: str = '1D', language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
@@ -273,6 +283,8 @@ async def most_frequent_time(key: str, interval: str = '1D'):
             WHERE
                 key_str = %s
                 AND published_date >= NOW() - {time_interval}
+                AND language = %s
+                AND country = %s
             GROUP BY
                 interval_published,
                 hour_only
@@ -294,7 +306,7 @@ async def most_frequent_time(key: str, interval: str = '1D'):
     """
     
     try:
-        cursor.execute(query, (key,key))
+        cursor.execute(query, (key, key, language, country,))
         result = cursor.fetchall()
         return result
     except Error as e:
@@ -305,14 +317,15 @@ async def most_frequent_time(key: str, interval: str = '1D'):
 
 
 @app.get("/sentiment/{key}")
-async def sentiment(key: str):
+async def sentiment(key: str, language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Error connecting to the database")
     
     cursor = connection.cursor(dictionary=True)
     
-    query = f"""
+    query = """
+                WITH LatestRecords AS (
                     SELECT
                         DATE_FORMAT(published_date, '%Y-%m-%d') AS day,
                         AVG(sentiment_score) AS avg_score,
@@ -321,16 +334,26 @@ async def sentiment(key: str):
                         newsdropbd.news
                     WHERE
                         key_str = %s
+                        AND language = %s
+                        AND country = %s
                     GROUP BY
                         DATE_FORMAT(published_date, '%Y-%m-%d')
                     ORDER BY
                         day DESC
-                    LIMIT 5;
-
+                    LIMIT 7
+                )
+                SELECT
+                    day,
+                    avg_score,
+                    avg_magnitude
+                FROM
+                    LatestRecords
+                ORDER BY
+                    day ASC;
     """
     
     try:
-        cursor.execute(query, (key,))
+        cursor.execute(query, (key, language, country,))
         result = cursor.fetchall()
         return result
     except Error as e:
