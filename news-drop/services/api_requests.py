@@ -87,9 +87,13 @@ def delete_bot(key_instance):
     else:
         print('ERROR', response.status_code)
 
-def post_bot(key_instance):
+def post_bot(key_instance, language="en", country="US"):
     url = f'{BASE_URL}/post_bot/'
-    data = {"key_instance": key_instance}
+    data = {
+        "key_instance": key_instance,
+        "language": language,
+        "country": country,
+            }
     response = requests.post(url, json=data)
 
     if response.status_code == 200:

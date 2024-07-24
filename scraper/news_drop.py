@@ -32,6 +32,7 @@ class News:
                                                                      self.country,
                                                                      self.country,
                                                                      self.language)
+        print(self._url)
         return self._get_feeds(self._url)
 
     def _get_feeds(self, url: str):

@@ -17,7 +17,7 @@ except ConfigException as e:
 
 api_instance = client.CoreV1Api()
 
-def crear_pod(key_instance):
+def crear_pod(key_instance, language, country):
     sufx = str(uuid.uuid4())[:8]
     pod_name = str("bot-scraper-" + sufx)
 
@@ -27,9 +27,11 @@ def crear_pod(key_instance):
             containers=[
                 client.V1Container(
                     name="news-drop-container-1",
-                    image="gcr.io/news-drop/news-drop-container:0.1.9",
+                    image="gcr.io/news-drop/news-drop-container:0.2.0",
                     env=[
                         client.V1EnvVar(name="key_instance", value=key_instance),
+                        client.V1EnvVar(name="language", value=language),
+                        client.V1EnvVar(name="country", value=country),
                         client.V1EnvVar(
                             name="DB_USER",
                             value_from=client.V1EnvVarSource(

@@ -1,17 +1,59 @@
 <div class="container">
-    <div class="row">
-      <div class="col"></div>
-      <div class="col-md-8">
-        <div class="shadow-lg p-3 bg-body-tertiary rounded">
-          <form action="{% url 'drops' %}" method="POST">
-            {% csrf_token %}
-            <div class="input-group">
-              <input type="text" class="form-control" placeholder="Search by news, keyword and more.." name="key_instance">
-            </div>
-          </form>
-        </div>
+  <div class="row">
+    <div class="col"></div>
+    <div class="col-md-8">
+      <div class="shadow-lg p-3 bg-body-tertiary rounded">
+        <form id="searchForm">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search by news, keyword and more.." name="key_instance" id="keyInstanceInput">
+          </div>
+        </form>
       </div>
-      <div class="col"></div>
+    </div>
+    <div class="col"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="searchModalLabel">Search Input</h5>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'drops' %}" method="POST" id="modalForm">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="modalKeyInstanceInput">Search by news, keyword and more..</label>
+            <input type="text" class="form-control" id="modalKeyInstanceInput" name="key_instance">
+          </div>
+          <div class="form-group">
+            <label for="modalCountrySelect">Country</label>
+            <select class="form-control" id="modalCountrySelect" name="country">
+              <option value="us">United States</option>
+              <option value="es">España</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="modalForm" class="btn btn-primary">Submit</button>
+      </div>
     </div>
   </div>
-  
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('#searchForm').on('submit', function(event) {
+      event.preventDefault(); // Evita el envío del formulario
+      var inputValue = $('#keyInstanceInput').val();
+      $('#modalKeyInstanceInput').val(inputValue); // Copia el valor al modal
+      $('#searchModal').modal('show'); // Muestra el modal
+    });
+  });
+</script>

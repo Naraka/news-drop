@@ -19,8 +19,8 @@ def index(request):
         key_instance = "outstanding"
 
         selected_interval = request.GET.get('interval', '7D')
-        selected_language  = request.GET.get('language', 'en')
-        selected_country  = request.GET.get('country', 'US')
+        selected_language  = request.GET.get('language', 'es')
+        selected_country  = request.GET.get('country', 'ES')
 
         bar_data = more_frequent_word(key_instance, interval=selected_interval, language=selected_language, country=selected_country)
         sentiment_data = sentiment(key_instance, language=selected_language, country=selected_country) 

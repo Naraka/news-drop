@@ -18,6 +18,14 @@ def index(request):
         bot_form = DropForm(request.POST)
         if bot_form.is_valid():
             key_instance = bot_form.cleaned_data['key_instance']
+            country_form = bot_form.cleaned_data['country']
+            if bot_form.cleaned_data['country'] == "us":
+                country = "US"
+                language = "en"
+            elif bot_form.cleaned_data['country'] == "es":
+                country = "ES"
+                language = "es"
+            else : raise "bad country"
             if Drops.objects.filter(key_instance=key_instance, user=request.user).exists():
                 messages.error(request, 'Bot with this key instance already exists.')
                 return redirect("drops")
@@ -29,7 +37,7 @@ def index(request):
                     newbot.save()
                     messages.success(request, 'Bot created successfully.')
                     try:
-                        post_bot(key_instance)
+                        post_bot(key_instance=key_instance, language=language, country=country)
                     except Exception as e:
                         messages.error(request, f'Error posting bot: {str(e)}')
                         return redirect("drops")
@@ -59,9 +67,15 @@ def detail(request, drop_id):
     if request.method == "GET":
         drop = Drops.objects.get(id=drop_id, user=request.user)
         data = Drops.objects.filter(user=request.user)
-        selected_interval = request.GET.get('interval', '7D')
-        selected_language  = request.GET.get('language', 'en')
-        selected_country  = request.GET.get('country', 'US')
+        country_get = Drops.objects.get(id=drop_id, user=request.user).country
+        if country_get == "us":
+            selected_country = "US"
+            selected_language = "en"
+        elif country_get == "es":
+            selected_country = "ES"
+            selected_language = "es"
+        else : raise "bad country"
+        selected_interval = request.GET.get('interval', '1M')
 
         bar_data = more_frequent_word(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
         sentiment_data = sentiment(drop.key_instance, language=selected_language, country=selected_country) 

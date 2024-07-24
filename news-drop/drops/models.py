@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 class Drops(models.Model):
     key_instance = models.CharField(max_length=100)
+    country = models.CharField(max_length=20, blank=True, null=True)
     bot_id = models.CharField(max_length=100, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

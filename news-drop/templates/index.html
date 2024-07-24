@@ -1,22 +1,8 @@
 {% extends "layout/base.html" %}
 
 {% block "content" %}
-<div class="container">
-  <div class="row">
-    <div class="col"></div>
-    <div class="col-md-8">
-      <div class="shadow-lg p-3 bg-body-tertiary rounded">
-        <form action="{% url 'drops' %}" method="POST">
-          {% csrf_token %}
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search by news, keyword and more.." name="key_instance">
-          </div>
-        </form>
-      </div>
-    </div>
-    <div class="col"></div>
-  </div>
-</div>
+
+{% include "drops/partials/create.html"%}
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center shadow-lg p-3 mb-5 bg-body-tertiary rounded mt-5">
   <h1 class="h2">Outstanding News</h1>

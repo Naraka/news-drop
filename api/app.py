@@ -81,6 +81,8 @@ async def get_news_by_key(key: str, language: str = "en", country:str = "US"):
 
 class Bot(BaseModel):
     key_instance: str
+    language: str
+    country: str
 
 
 bots = []
@@ -92,7 +94,7 @@ async def root():
 @app.post("/post_bot/")
 async def post_bot(key_instance:Bot):
     if key_instance.key_instance not in [bot['key_instance'] for bot in bots]:
-        pod_id = call_pods.crear_pod(key_instance.key_instance)
+        pod_id = call_pods.crear_pod(key_instance=key_instance.key_instance, language=key_instance.language, country=key_instance.country)
         bots.append({
             "key_instance":key_instance.key_instance,
             "pod_id":pod_id,
@@ -134,25 +136,36 @@ async def update_bots():
 nltk.download('stopwords')
 nltk.download('punkt')
 
-def clean_text(text):
-    cleaned_text = ''.join([char.lower() for char in text if char not in string.punctuation + '\"' + '“”'])
+def clean_text(text, key):
+    additional_chars = '»«–‘’'
+    additional_words = ['2024', 'directo', 'tras', 'hoy', '’', '‘']
+    
+    cleaned_text = ''.join([char.lower() for char in text if char not in string.punctuation + additional_chars + '“”'])
+    
     cleaned_text = ' '.join(cleaned_text.split())
+    
+    words = cleaned_text.split()
+    words = [word for word in words if word not in additional_words and word != key.lower()]
+    
+    cleaned_text = ' '.join(words)
+    
     return cleaned_text
 
-def process_titles(json_list, language: str = "en"):
+def process_titles(json_list, language: str = "en", key: str = ""):
     if language == "es":
         language = "spanish"
     elif language == "en":
         language = "english"
     else:
-        raise "language no asigned"
+        raise ValueError("language not assigned")
+    
     stop_words = set(stopwords.words(language))
     word_freq = Counter()
 
     for json_obj in json_list:
         title = json_obj.get('title', '')
         
-        cleaned_title = clean_text(title)
+        cleaned_title = clean_text(title, key)
         
         word_tokens = word_tokenize(cleaned_title, language=language)
         
@@ -198,7 +211,7 @@ async def get_more_frequent_word(key: str, interval: str = '1D', language: str =
     try:
         cursor.execute(query, (key, language, country,))
         result = cursor.fetchall()
-        return process_titles(result, language=language)
+        return process_titles(result, language=language, key=key)
     except mysql.connector.Error as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
