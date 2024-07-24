@@ -17,16 +17,8 @@
 {% comment %} carga de staticos {% endcomment %}
 
 
-{% comment %} iconos de la web {% endcomment %}
-    {% comment %} <!-- Favicons -->
-<link rel="apple-touch-icon" href="/docs/5.3/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-<link rel="icon" href="/docs/5.3/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/docs/5.3/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
-<link rel="manifest" href="/docs/5.3/assets/img/favicons/manifest.json">
-<link rel="mask-icon" href="/docs/5.3/assets/img/favicons/safari-pinned-tab.svg" color="#712cf9">
-<link rel="icon" href="/docs/5.3/assets/img/favicons/favicon.ico">
-<meta name="theme-color" content="#712cf9"> {% endcomment %}
-{% comment %} iconos de la web {% endcomment %}
+<link rel="icon" href="https://storage.cloud.google.com/djangostatic-bucket/img/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="https://storage.cloud.google.com/djangostatic-bucket/img/favicon.ico" type="image/x-icon">
 
 
 
@@ -139,99 +131,98 @@
 
 {% comment %} navbar {% endcomment %}
 <header>
-
-    <nav class="navbar bg-body-tertiary fixed-top">
-      <div class="container-fluid">
-        <div class="d-flex justify-content-start">
+  <nav class="navbar bg-body-tertiary fixed-top">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-start">
         <!-- Botón del Navbar-toggler -->
         <button class="navbar-toggler custom-navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation"
         style="border: none; outline: none; padding: .25rem .5rem; font-size: 80%; background-color: transparent; transition: none !important; animation: none !important; box-shadow: none !important;">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-
-      
-  
         <!-- Resto del contenido del Navbar -->
-        <a class="navbar-brand ms-5" href="{% url 'index' %}" style="background-color: transparent; box-shadow: none;">
+        <a class="navbar-brand ms-3 d-flex align-items-center" href="{% url 'index' %}" style="background-color: transparent; box-shadow: none;">
+          <img src="https://storage.cloud.google.com/djangostatic-bucket/img/logo.png" alt="Logo" style="max-height: 30px; margin-right: 10px;">
           News Dropped
-              {% comment %} <img src="{% static 'img/logo.jpg' %}" class="img-fluid" style="max-height: 50px;"> {% endcomment %}
+          {% comment %} <img src="{% static 'img/logo.jpg' %}" class="img-fluid" style="max-height: 50px;"> {% endcomment %}
         </a>
       </div>
 
+      <div class="dropdown text-end">
+        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="{{profile_image_url}}" alt="Placeholder" width="40" height="40" class="rounded-circle">
+        </a>
+        <ul class="dropdown-menu text-small" style="right: 0; left: auto;">
+          <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'signout' %}">Sign out</a></li>
+        </ul>
+      </div>
 
-        <div class="dropdown text-end">
-          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="{{profile_image_url}}" alt="Placeholder" width="40" height="40" class="rounded-circle">
-          </a>
-          <ul class="dropdown-menu text-small" style="right: 0; left: auto;">
-            <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{% url 'signout' %}">Sign out</a></li>
-          </ul>
+      <!-- Offcanvas Navbar -->
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title d-flex align-items-center gap-2" id="offcanvasNavbarLabel">
+            <img src="https://storage.cloud.google.com/djangostatic-bucket/img/logo.png" alt="Logo" style="max-height: 30px;">
+            News Dropped
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-      
-        
-        <!-- Offcanvas Navbar -->
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">News dropped</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <!-- Sidebar links -->
-            <ul class="nav flex-column">
-              <li class="nav-item">
-                <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="{% url 'index' %}">
-                  <svg class="bi"><use xlink:href="#house-fill"/></svg>
-                  Dashboard
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link d-flex align-items-center gap-2" href="{% url 'drops' %}">
-                  <svg class="bi"><use xlink:href="#file-earmark"/></svg>
-                  Drops
-                </a>
-              </li>
-            </ul>
-  
-            <!-- Add a new drop section -->
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-              <span>Drops</span>
-              {% comment %} <a id="addDropButton" class="link-secondary" href="#" data-toggle="collapse" data-target="#dropForm" aria-expanded="false" aria-controls="dropForm" aria-label="Add a new drop">
-                <svg class="bi" width="1em" height="1em" fill="currentColor">
-                  <use xlink:href="#plus-circle"/>
-                </svg>
-              </a> {% endcomment %}
-            </h6>
-            <div class="collapse" id="dropForm">
-              <form action="{% url 'drops' %}" method="POST">
-                {% csrf_token %}
-                <div class="row">
-                  <div class="col">
-                    <input type="text" class="form-control" placeholder="key_instance" name="key_instance">
-                  </div>
+        <div class="offcanvas-body">
+          <!-- Sidebar links -->
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="{% url 'index' %}">
+                <svg class="bi"><use xlink:href="#house-fill"/></svg>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="{% url 'drops' %}">
+                <svg class="bi"><use xlink:href="#file-earmark"/></svg>
+                Drops
+              </a>
+            </li>
+          </ul>
+
+          <!-- Add a new drop section -->
+          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
+            <span>Drops</span>
+            {% comment %} <a id="addDropButton" class="link-secondary" href="#" data-toggle="collapse" data-target="#dropForm" aria-expanded="false" aria-controls="dropForm" aria-label="Add a new drop">
+              <svg class="bi" width="1em" height="1em" fill="currentColor">
+                <use xlink:href="#plus-circle"/>
+              </svg>
+            </a> {% endcomment %}
+          </h6>
+          <div class="collapse" id="dropForm">
+            <form action="{% url 'drops' %}" method="POST">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col">
+                  <input type="text" class="form-control" placeholder="key_instance" name="key_instance">
                 </div>
-              </form>
-            </div>
-            
-            <!-- Data list -->
-            {% for dat in data %}
-            <ul class="nav flex-column mb-auto">
-              <li class="nav-item">
-                <a class="nav-link d-flex align-items-center gap-2" href={% url "detail" dat.id %}>
-                  <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
-                  {{ dat.key_instance }}
-                </a>
-              </li>
-            </ul>
-            {% endfor %}
+              </div>
+            </form>
           </div>
+          
+          <!-- Data list -->
+          {% for dat in data %}
+          <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href={% url "detail" dat.id %}>
+                <svg class="bi"><use xlink:href="#file-earmark-text"/></svg>
+                {{ dat.key_instance }}
+              </a>
+            </li>
+          </ul>
+          {% endfor %}
         </div>
       </div>
-    </nav>
-  </header>
-  
+    </div>
+  </nav>
+</header>
+
+
 
 {% comment %} navbar {% endcomment %}
 

@@ -10,6 +10,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from collections import Counter
+from call_pods import client
 
 
 app = FastAPI()
@@ -94,10 +95,10 @@ async def root():
 @app.post("/post_bot/")
 async def post_bot(key_instance:Bot):
     if key_instance.key_instance not in [bot['key_instance'] for bot in bots]:
-        pod_id = call_pods.crear_pod(key_instance=key_instance.key_instance, language=key_instance.language, country=key_instance.country)
+        deployment_name = call_pods.create_deployment(key_instance=key_instance.key_instance, language=key_instance.language, country=key_instance.country)
         bots.append({
             "key_instance":key_instance.key_instance,
-            "pod_id":pod_id,
+            "deployment_name":deployment_name,
         })
         return key_instance.key_instance
     else:
@@ -108,28 +109,32 @@ async def get_bots():
     return bots
 
 @app.delete("/delete_bots/{key_instance}")
-async def delete_bots(key_instance:str):
-    for i in bots:
-        if i["key_instance"] == key_instance:
-            pod_id=i["pod_id"]
+async def delete_bots(key_instance: str):
+    deployment_name = None
 
-    call_pods.api_instance.delete_namespaced_pod(name=pod_id,namespace="bots")
+    # Buscar el Deployment asociado al key_instance
     for index, bot in enumerate(bots):
-        if bot["pod_id"] == pod_id:
+        if bot["key_instance"] == key_instance:
+            deployment_name = bot["deployment_name"]
+            break
+    
+    if not deployment_name:
+        raise HTTPException(status_code=404, detail=f"No bot found with key_instance {key_instance}")
+
+    # Eliminar el Deployment
+    try:
+        call_pods.api_instance.delete_namespaced_deployment(name=deployment_name, namespace="bots", body=client.V1DeleteOptions())
+    except client.exceptions.ApiException as e:
+        raise HTTPException(status_code=e.status, detail=f"Failed to delete Deployment: {e.reason}")
+
+    # Actualizar la lista de bots
+    for index, bot in enumerate(bots):
+        if bot["deployment_name"] == deployment_name:
             del bots[index]
-            return  f"bot {pod_id} eliminado exitosamente"
+            return f"Deployment {deployment_name} eliminado exitosamente"
 
-
-
-@app.delete("/delete_all_bots/")
-async def delete_bots():
-    pods = call_pods.api_instance.list_namespaced_pod(namespace="bots")
-    for pod in pods.items:
-        call_pods.api_instance.delete_namespaced_pod(name=pod.metadata.name, namespace="bots")
-    bots.clear()
-    return "deleted pods"
-async def update_bots():
-    pass
+    # Si llegamos aquí, no encontramos el Deployment en la lista de bots (lo cual no debería ocurrir)
+    raise HTTPException(status_code=500, detail="Deployment not found in the bots list after deletion")
 
 
 
