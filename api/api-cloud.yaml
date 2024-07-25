@@ -17,7 +17,7 @@ spec:
       serviceAccountName: api-serviceaccount-kubernetes
       containers:
         - name: api-container-news-drop
-          image: gcr.io/news-drop/news-drop-api:0.3.7
+          image: gcr.io/news-drop/news-drop-api:0.3.8
           env:
             - name: DB_USER
               valueFrom:
@@ -43,11 +43,11 @@ spec:
             - containerPort: 80
           resources:
             limits:
+              cpu: "200m"
+              memory: "200Mi"
+            requests:
               cpu: "100m"
               memory: "100Mi"
-            requests:
-              cpu: "30m"
-              memory: "80Mi"
 ---
 apiVersion: v1
 kind: Service
