@@ -56,10 +56,10 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="id_profile_image" class="form-label">Select new profile image</label>
-                            <input class="form-control" type="file" id="id_profile_image" name="profile_image">
+                            <input class="form-control" type="file" id="id_profile_image" name="profile_image" accept=".jpg, .jpeg, .png">
                         </div>
                         <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Update Image</button>
-                    </form>
+                    </form>                    
                 </div>
             </div>
         </div>

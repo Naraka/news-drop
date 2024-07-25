@@ -9,8 +9,8 @@ class Drops(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            if Drops.objects.filter(user=self.user).count() >= 5:
-                raise ValueError("Free tier can only have 5 drops")
+            if Drops.objects.filter(user=self.user).count() >= 1:
+                raise ValueError("Free tier can only have 1 drops")
             super(Drops, self).save(*args, **kwargs)
 
     def __str__(self):

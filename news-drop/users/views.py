@@ -9,9 +9,6 @@ from .forms import ImageUserform
 from .models import ImageUser
 
 
-
-from utils.config import superuser_required
-
 def signup(request):
     if request.user.is_authenticated:
         return redirect('/')
@@ -71,7 +68,6 @@ def signin(request):
                 except:
                     return redirect("/")
 @login_required
-@superuser_required
 def profile(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -96,7 +92,6 @@ def profile(request):
 
 
 @login_required
-@superuser_required
 def upload_image(request):
     if request.method == 'POST':
         form = ImageUserform(request.POST, request.FILES)

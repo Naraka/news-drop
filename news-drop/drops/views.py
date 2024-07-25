@@ -5,9 +5,10 @@ from .models import Drops
 from django.contrib import messages
 from utils.config import superuser_required
 from services.api_requests import get_news_frequency, more_frequent_word, most_frequenttime, news_by_key, delete_bot, post_bot, sentiment
+from django.views.decorators.cache import cache_page, cache_control
+
 
 @login_required
-@superuser_required
 def index(request):
     if request.method == "GET":
         drops = Drops.objects.filter(user=request.user)
@@ -18,7 +19,6 @@ def index(request):
         bot_form = DropForm(request.POST)
         if bot_form.is_valid():
             key_instance = bot_form.cleaned_data['key_instance']
-            country_form = bot_form.cleaned_data['country']
             if bot_form.cleaned_data['country'] == "us":
                 country = "US"
                 language = "en"
@@ -51,7 +51,6 @@ def index(request):
 
 
 @login_required
-@superuser_required
 def delete_drop(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     drop.delete()
@@ -61,8 +60,9 @@ def delete_drop(request, drop_id):
     else:
         return redirect("drops")
 
+@cache_page(60 * 15)
+@cache_control(max_age=3600) 
 @login_required
-@superuser_required
 def detail(request, drop_id):
     if request.method == "GET":
         drop = Drops.objects.get(id=drop_id, user=request.user)

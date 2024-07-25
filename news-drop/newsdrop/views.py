@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponse
 from services.api_requests import *
 from utils.config import superuser_required
+from django.views.decorators.cache import cache_page, cache_control
 
 def server_error_view(request):
     return redirect('drops')
@@ -12,8 +13,9 @@ def server_error_view(request):
 def health_check(request):
     return HttpResponse("OK", status=200)
 
+@cache_page(60 * 15)
+@cache_control(max_age=3600) 
 @login_required
-@superuser_required
 def index(request):
     if request.method == "GET":
         key_instance = "outstanding"

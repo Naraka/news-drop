@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: django-container-news-drop
-        image: gcr.io/news-drop/django-container-news-drop:0.4.1
+        image: gcr.io/news-drop/django-container-news-drop:0.4.5
         env:
         - name: SECRET_KEY
           valueFrom:
@@ -41,6 +41,12 @@ spec:
             secretKeyRef:
               name: django-db-credentials 
               key: DB_PASSWORD
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secrets/news-drop-796857b8eb91.json
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /etc/secrets
+          readOnly: true
         ports:
         - containerPort: 80
         readinessProbe:
@@ -52,6 +58,21 @@ spec:
           timeoutSeconds: 1
           successThreshold: 1
           failureThreshold: 3
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "50m"
+          limits:
+            memory: "300Mi"
+            cpu: "100m"
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: bucket-secret-key
+          items:
+          - key: news-drop-796857b8eb91.json
+            path: news-drop-796857b8eb91.json
+
 
 ---
 apiVersion: networking.gke.io/v1
