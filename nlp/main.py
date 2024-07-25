@@ -3,14 +3,6 @@ import mysql.connector
 from mysql.connector import Error
 from dotenv import load_dotenv
 import os
-import time
-
-def analyze(news):
-    client = language_v2.LanguageServiceClient()
-    document = language_v2.Document(
-        content=news, type_=language_v2.Document.Type.PLAIN_TEXT
-    )
-    return client.analyze_sentiment(request={"document": document})
 
 try:
     load_dotenv()
@@ -19,6 +11,16 @@ DB_USER = os.environ.get('DB_USER')
 DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DB_HOST = os.environ.get('DB_HOST')
 DB_NAME = os.environ.get('DB_NAME')
+API_KEY = os.environ.get('API_KEY')
+
+
+def analyze(news):
+    client = language_v2.LanguageServiceClient(client_options={"api_key":API_KEY})
+    document = language_v2.Document(
+        content=news, type_=language_v2.Document.Type.PLAIN_TEXT
+    )
+    return client.analyze_sentiment(request={"document": document})
+
 
 def create_connection():
     try:
@@ -51,11 +53,13 @@ def add_sentiment():
 
     for new in news:
         if new["sentiment_magnitude"] is None or new ["sentiment_score"] is None:
-            data = analyze(new["title"])
+            try:
+                data = analyze(new["title"])
+            except:
+                continue
             update_query = "UPDATE newsdropbd.news SET sentiment_score = %s, sentiment_magnitude = %s WHERE id = %s;"
             cursor.execute(update_query, (data.document_sentiment.score, data.document_sentiment.magnitude, new["id"]))
             connection.commit()
-            time.sleep(20)
         else:
             pass
 

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: nlp-job
+  name: nlp-job-cronjob
 spec:
   schedule: "0 * * * *"
   jobTemplate:
@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: nlp-job
-            image: image:tag
+            image: gcr.io/news-drop/nlp-bot:0.0.3
             env:
             - name: DB_USER
               valueFrom:
@@ -32,4 +32,16 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: DB_PASSWORD
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: api-key-nlp
+                  key: API_KEY
+            resources:
+              requests:
+                memory: "100Mi"
+                cpu: "50m"
+              limits:
+                memory: "200Mi"
+                cpu: "100m"
           restartPolicy: OnFailure
