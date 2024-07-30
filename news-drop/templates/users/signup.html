@@ -1,39 +1,75 @@
 {% extends "users/base.html" %}
 
 {% block "content" %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 {% if error is not None %}
 <div class="alert alert-warning" role="alert">
-    {{error}}
-  </div>
+    {{ error }}
+</div>
 {% endif %}
 
 <div class="modal-dialog" role="document">
     <div class="modal-content rounded-4 shadow">
         <div class="modal-header p-5 pb-4 border-bottom-0">
             <h1 class="fw-bold mb-0 fs-2">Sign up</h1>
-           </div>
-           <div class="modal-body p-5 pt-0">
-               <form action="{% url 'signup' %}" method="POST">
-               {% csrf_token %}
-           <div class="form-floating mb-3">
-             <input type="text" class="form-control rounded-3" id="id_username" placeholder="Username" name="username">
-             <label for="floatingInput">Username</label>
-           </div>
-           <div class="form-floating mb-3">
-             <input type="password" class="form-control rounded-3" id="id_password1" name="password1" placeholder="Password">
-             <label for="floatingPassword">Password</label>
-           </div>
-           <div class="form-floating mb-3">
-             <input type="password" class="form-control rounded-3" id="id_password2" name="password2" placeholder="Password">
-             <label for="floatingPassword">Confirm Password</label>
-           </div>
-           <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Sign up</button>
-           <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
-         </form>
-       </div>
-   </div>
+        </div>
+        <div class="modal-body p-5 pt-0">
+            <form action="{% url 'signup' %}" method="POST">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control rounded-3" id="first_name" placeholder="First name" name="first_name" required>
+                            <label for="first_name">First name</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control rounded-3" id="last_name" placeholder="Last name" name="last_name" required>
+                            <label for="last_name">Last name</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control rounded-3" id="email" placeholder="Email" name="email" required>
+                    <label for="email">Email</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control rounded-3" id="id_username" placeholder="Username" name="username" required>
+                    <label for="id_username">Username</label>
+                </div>
+                <div class="form-floating mb-3 position-relative">
+                    <input type="password" class="form-control rounded-3" id="id_password1" name="password1" placeholder="Password" required>
+                    <label for="id_password1">Password</label>
+                    <i class="far fa-eye position-absolute" id="togglePassword1" style="cursor: pointer; right: 10px; top: 50%; transform: translateY(-50%);"></i>
+                </div>
+                <div class="form-floating mb-3 position-relative">
+                    <input type="password" class="form-control rounded-3" id="id_password2" name="password2" placeholder="Confirm Password" required>
+                    <label for="id_password2">Confirm Password</label>
+                    <i class="far fa-eye position-absolute" id="togglePassword2" style="cursor: pointer; right: 10px; top: 50%; transform: translateY(-50%);"></i>
+                </div>
+                <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Sign up</button>
+                <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
+            </form>
+        </div>
+    </div>
 </div>
 
+<script>
+    document.getElementById('togglePassword1').addEventListener('click', function () {
+        const passwordField = document.getElementById('id_password1');
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
+
+    document.getElementById('togglePassword2').addEventListener('click', function () {
+        const passwordField = document.getElementById('id_password2');
+        const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordField.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
+</script>
 
 {% endblock "content" %}
