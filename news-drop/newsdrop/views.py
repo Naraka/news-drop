@@ -3,9 +3,11 @@ from drops.models import Drops
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.http import HttpResponse
-from services.api_requests import *
+from services.api_requests import APIClient
 from utils.config import superuser_required
 from django.views.decorators.cache import cache_page, cache_control
+
+API=APIClient()
 
 def server_error_view(request):
     return redirect('drops')
@@ -24,11 +26,11 @@ def index(request):
         selected_language  = request.GET.get('language', 'es')
         selected_country  = request.GET.get('country', 'ES')
 
-        bar_data = more_frequent_word(key_instance, interval=selected_interval, language=selected_language, country=selected_country)
-        sentiment_data = sentiment(key_instance, language=selected_language, country=selected_country) 
-        news_frequency = get_news_frequency(key_instance, interval=selected_interval, language=selected_language, country=selected_country)
-        most_frequent_time = most_frequenttime(key_instance, interval=selected_interval, language=selected_language, country=selected_country)
-        news = news_by_key(key_instance, language=selected_language, country=selected_country)
+        bar_data = API.more_frequent_word(key_instance=key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        sentiment_data = API.sentiment(key_instance=key_instance, language=selected_language, country=selected_country) 
+        news_frequency = API.get_news_frequency(key_instance=key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        most_frequent_time = API.most_frequent_time(key_instance=key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        news = API.news_by_key(key_instance=key_instance, language=selected_language, country=selected_country)
 
         drops = Drops.objects.filter(user=request.user)
 

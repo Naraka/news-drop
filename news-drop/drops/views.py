@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from .models import Drops
 from django.contrib import messages
 from utils.config import superuser_required
-from services.api_requests import get_news_frequency, more_frequent_word, most_frequenttime, news_by_key, delete_bot, post_bot, sentiment
+from services.api_requests import APIClient
 from django.views.decorators.cache import cache_page, cache_control
 
+API=APIClient()
 
 @login_required
 def index(request):
@@ -37,7 +38,7 @@ def index(request):
                     newbot.save()
                     messages.success(request, 'Bot created successfully.')
                     try:
-                        post_bot(key_instance=key_instance, language=language, country=country)
+                        API.post_bot(key_instance=key_instance, language=language, country=country)
                     except Exception as e:
                         messages.error(request, f'Error posting bot: {str(e)}')
                         return redirect("drops")
@@ -55,7 +56,7 @@ def delete_drop(request, drop_id):
     drop = Drops.objects.get(id=drop_id, user=request.user)
     drop.delete()
     if not Drops.objects.filter(key_instance=drop.key_instance).exists():
-        delete_bot(drop.key_instance)
+        API.delete_bot(drop.key_instance)
         return redirect("drops")    
     else:
         return redirect("drops")
@@ -77,11 +78,11 @@ def detail(request, drop_id):
         else : raise "bad country"
         selected_interval = request.GET.get('interval', '1M')
 
-        bar_data = more_frequent_word(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
-        sentiment_data = sentiment(drop.key_instance, language=selected_language, country=selected_country) 
-        news_frequency = get_news_frequency(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
-        most_frequent_time = most_frequenttime(drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
-        news = news_by_key(drop.key_instance, language=selected_language, country=selected_country)
+        bar_data = API.more_frequent_word(key_instance=drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        sentiment_data = API.sentiment(key_instance=drop.key_instance, language=selected_language, country=selected_country) 
+        news_frequency = API.get_news_frequency(key_instance=drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        most_frequent_time = API.most_frequent_time(key_instance=drop.key_instance, interval=selected_interval, language=selected_language, country=selected_country)
+        news = API.news_by_key(key_instance=drop.key_instance, language=selected_language, country=selected_country)
 
         context={
             "drop":drop,
