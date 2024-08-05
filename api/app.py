@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 import string
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -11,9 +12,24 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from collections import Counter
 from call_pods import client
+from redis import asyncio as aioredis
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
+from fastapi_cache.decorator import cache
+from collections.abc import AsyncIterator
+
+CACHE_EXPIRE = 60 * 10
+
+redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    redis = aioredis.from_url(redis_url)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    yield
 
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 try:
     load_dotenv()
@@ -39,6 +55,7 @@ def create_connection():
 
 
 @app.get("/news")
+@cache(expire=CACHE_EXPIRE)
 async def get_news():
     connection = create_connection()
     if not connection:
@@ -60,6 +77,7 @@ async def get_news():
 
 
 @app.get("/news/{key}")
+@cache(expire=CACHE_EXPIRE)
 async def get_news_by_key(key: str, language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
@@ -186,6 +204,7 @@ def process_titles(json_list, language: str = "en", key: str = ""):
 
 
 @app.get("/get_more_frequent_word/{key}")
+@cache(expire=CACHE_EXPIRE)
 async def get_more_frequent_word(key: str, interval: str = '1D', language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
@@ -228,6 +247,7 @@ async def get_more_frequent_word(key: str, interval: str = '1D', language: str =
 
 
 @app.get("/get_news_frequency/{key}")
+@cache(expire=CACHE_EXPIRE)
 async def get_news_frequency(key: str, interval: str = '1D', language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
@@ -272,6 +292,7 @@ async def get_news_frequency(key: str, interval: str = '1D', language: str = "en
 
 
 @app.get("/most_frequent_time/{key}")
+@cache(expire=CACHE_EXPIRE)
 async def most_frequent_time(key: str, interval: str = '1D', language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
@@ -335,6 +356,7 @@ async def most_frequent_time(key: str, interval: str = '1D', language: str = "en
 
 
 @app.get("/sentiment/{key}")
+@cache(expire=CACHE_EXPIRE)
 async def sentiment(key: str, language: str = "en", country:str = "US"):
     connection = create_connection()
     if not connection:
