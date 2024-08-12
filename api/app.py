@@ -130,7 +130,6 @@ async def get_bots():
 async def delete_bots(key_instance: str):
     deployment_name = None
 
-    # Buscar el Deployment asociado al key_instance
     for index, bot in enumerate(bots):
         if bot["key_instance"] == key_instance:
             deployment_name = bot["deployment_name"]
@@ -139,19 +138,16 @@ async def delete_bots(key_instance: str):
     if not deployment_name:
         raise HTTPException(status_code=404, detail=f"No bot found with key_instance {key_instance}")
 
-    # Eliminar el Deployment
     try:
         call_pods.api_instance.delete_namespaced_deployment(name=deployment_name, namespace="bots", body=client.V1DeleteOptions())
     except client.exceptions.ApiException as e:
         raise HTTPException(status_code=e.status, detail=f"Failed to delete Deployment: {e.reason}")
 
-    # Actualizar la lista de bots
     for index, bot in enumerate(bots):
         if bot["deployment_name"] == deployment_name:
             del bots[index]
             return f"Deployment {deployment_name} eliminado exitosamente"
 
-    # Si llegamos aquí, no encontramos el Deployment en la lista de bots (lo cual no debería ocurrir)
     raise HTTPException(status_code=500, detail="Deployment not found in the bots list after deletion")
 
 
@@ -212,7 +208,6 @@ async def get_more_frequent_word(key: str, interval: str = '1D', language: str =
     
     cursor = connection.cursor(dictionary=True)
     
-    # Definir el intervalo de tiempo basado en el parámetro recibido
     if interval == '1D':
         time_interval = 'INTERVAL 1 DAY'
     elif interval == '7D':
@@ -300,7 +295,6 @@ async def most_frequent_time(key: str, interval: str = '1D', language: str = "en
     
     cursor = connection.cursor(dictionary=True)
     
-    # Definir el intervalo de tiempo basado en el parámetro recibido
     if interval == '1D':
         time_interval = 'INTERVAL 1 DAY'
     elif interval == '7D':
