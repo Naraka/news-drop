@@ -17,7 +17,7 @@ spec:
       serviceAccountName: api-serviceaccount-kubernetes
       containers:
         - name: api-container-news-drop
-          image: gcr.io/news-drop/news-drop-api:0.3.8
+          image: gcr.io/news-drop/news-drop-api:0.3.9
           env:
             - name: DB_USER
               valueFrom:
@@ -39,6 +39,10 @@ spec:
                 secretKeyRef:
                   name: db-credentials
                   key: DB_PASSWORD
+            - name: REDIS_HOST
+              value: redis-service
+            - name: REDIS_PORT
+              value: "6379"
           ports:
             - containerPort: 80
           resources:

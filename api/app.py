@@ -20,7 +20,9 @@ from collections.abc import AsyncIterator
 
 CACHE_EXPIRE = 60 * 10
 
-redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = os.getenv("REDIS_PORT", "6379")
+redis_url = f"redis://{redis_host}:{redis_port}"
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:

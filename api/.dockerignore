@@ -3,3 +3,4 @@
 /__pycache__
 api-cloud.yaml
 secret.sh
+redis-deployment.yaml
