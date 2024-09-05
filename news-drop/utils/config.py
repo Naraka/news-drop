@@ -1,6 +1,6 @@
 from django.core.exceptions import PermissionDenied
 
-BASE_URL = "http://34.118.239.153:80"
+BASE_URL = "http://34.118.236.26:80"
 # BASE_URL = "http://127.0.0.1:80"
 
 def superuser_required(function):

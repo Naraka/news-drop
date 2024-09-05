@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: django-container-news-drop
-        image: gcr.io/news-drop/django-container-news-drop:0.4.8
+        image: gcr.io/news-drop/django-container-news-drop:0.5.2
         env:
         - name: SECRET_KEY
           valueFrom:
@@ -81,7 +81,7 @@ metadata:
   name: managed-cert
 spec:
   domains:
-    - app.newsdropped.com
+    - newsdropped.com
 ---
 
 
@@ -122,7 +122,7 @@ metadata:
     networking.gke.io/v1beta1.FrontendConfig: "http-to-https"
 spec:
   rules:
-    - host: app.newsdropped.com
+    - host: newsdropped.com
       http:
         paths:
           - pathType: ImplementationSpecific

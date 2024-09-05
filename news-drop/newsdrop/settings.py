@@ -196,7 +196,10 @@ LOGIN_URL = '/signin/'
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_DOMAIN = 'app.newsdropped.com'
-CSRF_TRUSTED_ORIGINS = ['https://app.newsdropped.com']
+
+CSRF_COOKIE_DOMAIN = 'newsdropped.com'
+
+CSRF_TRUSTED_ORIGINS = ['https://newsdropped.com']
+
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 3600
