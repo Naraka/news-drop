@@ -2,8 +2,6 @@
 
 {% block "content" %}
 
-{% include "drops/partials/create.html"%}
-
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center shadow-lg p-3 mb-5 bg-body-tertiary rounded mt-5">
   <h1 class="h2">Outstanding News</h1>
   <div class="d-flex flex-column flex-md-row ml-auto">
@@ -132,7 +130,7 @@
     
     
 
-    <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
+    {% comment %} <div class="shadow-lg p-3 mb-5 bg-body-tertiary rounded">
       <div class="row">
           <div class="col-12">
                   <h6>Sentiment Trends</h6>
@@ -146,6 +144,6 @@
                   </div>
               </div>
           </div>
-      </div>
+      </div> {% endcomment %}
 
 {% endblock %}

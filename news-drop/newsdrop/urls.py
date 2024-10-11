@@ -10,6 +10,4 @@ urlpatterns = [
     path('', views.index , name="index"),
     path('healthz/', health_check),
     path('admin/', admin.site.urls),
-    path('drops/', include("drops.urls")),
-    path('', include("users.urls")),
 ]

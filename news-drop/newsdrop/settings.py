@@ -41,9 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'drops',
-    'storages',
-    'users'
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -69,7 +67,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'users.context_processors.profile_image',
             ],
         },
     },
@@ -91,8 +88,17 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
         'PORT': '3306',
+    },
+    'APP': {
+        'ENGINE': 'mysql.connector.django',
+        'NAME': os.environ.get('DB_NAME_APP'),
+        'USER': os.environ.get('DB_USER_APP'),
+        'PASSWORD': os.environ.get('DB_PASSWORD_APP'),
+        'HOST': os.environ.get('DB_HOST_APP'),
+        'PORT': '3306',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
