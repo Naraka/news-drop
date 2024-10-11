@@ -2,20 +2,20 @@ import feedparser
 import time
 import os
 import mysql.connector
+import logging
 from datetime import datetime
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Really Simple Syndication, Atom
 RSS_URL = "https://news.google.com/rss"
 
-
 class News:
 
     def __init__(self, language="es", country="ES"):
-
-
         self.language = language
         self.country = country
-
 
     def get_drops(self):
         self._url = "{}?hl={}&gl={}&ceid={}:{}".format(RSS_URL,
@@ -44,11 +44,8 @@ class News:
         return json
 
     def _published_date_clean(self, published_date):
-
         ptime = datetime.strptime(published_date, '%a, %d %b %Y %H:%M:%S %Z')
-
         return ptime.strftime('%Y-%m-%d %H:%M:%S')
-
 
     def _description_clean(self, description):
         start = description.find('<a')
@@ -56,12 +53,9 @@ class News:
 
         if start != -1 and end != -1:
             description_tags = description[start:end]
-
             first_gt = description_tags.find('>')
-
             if first_gt != -1:
                 clean_text = description_tags[first_gt + 1:]
-
                 return clean_text
         return None
 
@@ -72,33 +66,34 @@ class News:
         else:
             return title.strip()
 
-
     def listening_drops(self):
         try:
             DB_USER = os.environ.get('DB_USER')
             DB_PASSWORD = os.environ.get('DB_PASSWORD')
-            DB_HOST = os.environ.get('DB_HOST')
             DB_NAME = os.environ.get('DB_NAME')
-            print("las credenciales de db se han asignado correctamente")
-            print(DB_HOST, DB_NAME, DB_PASSWORD, DB_USER)
-        except: print("las credenciales de db no se han asignado correctamente")
+            UNIX_SOCKET_PATH = f"/cloudsql/{os.environ.get('INSTANCE_CONNECTION_NAME')}"
+            logging.info("Database credentials have been assigned successfully.")
+        except Exception as e:
+            logging.error(f"Failed to assign database credentials: {e}")
+            return
+
         try:
             conn = mysql.connector.connect(
-            user=DB_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            database=DB_NAME
-        )
-            print("Conexión exitosa a la base de datos")
+                user=DB_USER,
+                password=DB_PASSWORD,
+                database=DB_NAME,
+                unix_socket=UNIX_SOCKET_PATH
+            )
+            logging.info("Successfully connected to the database.")
         except mysql.connector.Error as err:
-            print(f"Error al conectar a la base de datos: {err}")
+            logging.error(f"Error connecting to the database: {err}")
+            return
+
         cursor = conn.cursor()
-        while True:
-            
+
+        for _ in range(3):
             batch = self.get_drops()
             for entrie in batch:
-                    
-
                 cursor.execute("""
                     SELECT * FROM news 
                     WHERE title = %s 
@@ -122,7 +117,7 @@ class News:
                 existing_row = cursor.fetchone()
 
                 if existing_row:
-                    print("La fila completa ya existe en la base de datos. No se insertará nada.")
+                    logging.info("The complete row already exists in the database. No insertion will occur.")
                 else:
                     cursor.execute("""
                         INSERT INTO news (title, link, published_date, description, source, key_str, language, country)
@@ -138,8 +133,10 @@ class News:
                         entrie["country"]
                     ))
                     conn.commit()
+                    logging.info("New entry inserted into the database.")
 
+            time.sleep(200)  # Delay before the next iteration
 
-
-
-            time.sleep(200)
+        cursor.close()
+        conn.close()
+        logging.info("Database connection closed after processing.")
