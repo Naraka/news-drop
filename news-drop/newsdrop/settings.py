@@ -86,16 +86,14 @@ DATABASES = {
         'NAME': os.environ.get('DB_NAME'),
         'USER': os.environ.get('DB_USER'),
         'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': '3306',
+        'HOST': os.environ.get('INSTANCE_CONNECTION_NAME'),
     },
     'APP': {
         'ENGINE': 'mysql.connector.django',
         'NAME': os.environ.get('DB_NAME_APP'),
         'USER': os.environ.get('DB_USER_APP'),
         'PASSWORD': os.environ.get('DB_PASSWORD_APP'),
-        'HOST': os.environ.get('DB_HOST_APP'),
-        'PORT': '3306',
+        'HOST': os.environ.get('INSTANCE_CONNECTION_NAME'),
     }
 }
 
@@ -196,16 +194,12 @@ STATIC_URL = f'https://storage.googleapis.com/{GS_STATIC_BUCKET_NAME}/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login required redirect path
-LOGIN_URL = '/signin/'
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
 
+# CSRF_COOKIE_DOMAIN = 'newsdropped.com'
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# CSRF_TRUSTED_ORIGINS = ['https://newsdropped.com']
 
-CSRF_COOKIE_DOMAIN = 'newsdropped.com'
-
-CSRF_TRUSTED_ORIGINS = ['https://newsdropped.com']
-
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_AGE = 3600
+# SESSION_SAVE_EVERY_REQUEST = True
+# SESSION_COOKIE_AGE = 3600
